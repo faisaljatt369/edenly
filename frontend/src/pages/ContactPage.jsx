@@ -4,35 +4,99 @@ import FormField from '../components/common/FormField';
 import Alert from '../components/common/Alert';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 
-const InfoCard = ({ icon, title, value, href }) => (
-  <a href={href} style={{
-    display: 'flex', alignItems: 'flex-start', gap: 'var(--space-4)',
-    padding: 'var(--space-5)', background: 'var(--color-bg-card)',
-    border: '1px solid var(--color-border-light)', borderRadius: 'var(--radius-lg)',
-    textDecoration: 'none', transition: 'all var(--transition-base)',
-    boxShadow: 'var(--shadow-sm)',
-  }}
-    onMouseEnter={(e) => { e.currentTarget.style.boxShadow = 'var(--shadow-md)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-    onMouseLeave={(e) => { e.currentTarget.style.boxShadow = 'var(--shadow-sm)'; e.currentTarget.style.transform = 'none'; }}
+/* ── Contact channel cards ──────────────────────────────────────────────────── */
+const ChannelCard = ({ icon, label, value, sub, href }) => (
+  <a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer"
+    style={{
+      display: 'flex', flexDirection: 'column', gap: 12,
+      padding: '24px 20px',
+      background: 'var(--color-bg-card)',
+      border: '1px solid var(--color-border-light)',
+      borderRadius: 'var(--radius-xl)',
+      textDecoration: 'none',
+      transition: 'all var(--transition-base)',
+      boxShadow: 'var(--shadow-sm)',
+      flex: 1,
+    }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.boxShadow = '0 8px 32px rgba(2,65,57,0.12)';
+      e.currentTarget.style.borderColor = 'rgba(2,65,57,0.25)';
+      e.currentTarget.style.transform = 'translateY(-3px)';
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
+      e.currentTarget.style.borderColor = 'var(--color-border-light)';
+      e.currentTarget.style.transform = 'none';
+    }}
   >
     <div style={{
-      width: 44, height: 44, borderRadius: 'var(--radius-md)', flexShrink: 0,
-      background: 'rgba(2,65,57,0.08)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20,
+      width: 46, height: 46, borderRadius: 14,
+      background: 'linear-gradient(135deg, rgba(2,65,57,0.1) 0%, rgba(73,169,108,0.12) 100%)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22,
     }}>{icon}</div>
     <div>
-      <p style={{ fontWeight: 600, fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)', marginBottom: 4 }}>{title}</p>
-      <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-primary)' }}>{value}</p>
+      <p style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', color: 'var(--color-text-muted)', marginBottom: 4 }}>{label}</p>
+      <p style={{ fontWeight: 600, fontSize: 'var(--font-size-sm)', color: 'var(--color-primary)', marginBottom: 2 }}>{value}</p>
+      {sub && <p style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>{sub}</p>}
     </div>
   </a>
 );
 
+/* ── FAQ accordion item ─────────────────────────────────────────────────────── */
+const FAQItem = ({ q, a, open, onToggle }) => (
+  <div style={{
+    borderRadius: 'var(--radius-lg)',
+    border: `1px solid ${open ? 'rgba(2,65,57,0.2)' : 'var(--color-border-light)'}`,
+    background: open ? 'rgba(2,65,57,0.02)' : 'var(--color-bg-card)',
+    overflow: 'hidden',
+    transition: 'all var(--transition-fast)',
+  }}>
+    <button
+      type="button" onClick={onToggle}
+      style={{
+        width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        gap: 16, padding: '16px 20px',
+        background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
+      }}
+    >
+      <span style={{ fontWeight: 600, fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)', lineHeight: 1.5 }}>{q}</span>
+      <span style={{
+        width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
+        background: open ? 'var(--color-primary)' : 'var(--color-bg-muted)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        transition: 'all var(--transition-fast)',
+      }}>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+          stroke={open ? '#fff' : 'var(--color-text-muted)'} strokeWidth="2.5" strokeLinecap="round">
+          <polyline points={open ? '18 15 12 9 6 15' : '6 9 12 15 18 9'} />
+        </svg>
+      </span>
+    </button>
+    {open && (
+      <div style={{ padding: '0 20px 18px', borderTop: '1px solid rgba(2,65,57,0.08)' }}>
+        <p style={{ paddingTop: 14, fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.75 }}>{a}</p>
+      </div>
+    )}
+  </div>
+);
+
+/* ── Page ───────────────────────────────────────────────────────────────────── */
+const FAQS = [
+  { q: 'How do I book a service?', a: "Search for providers, pick a service and time slot that works for you, and confirm your booking. You'll receive a confirmation by email." },
+  { q: 'How do I become a provider?', a: 'Register as a provider, complete your profile with your services and location, and our team will review and activate your listing.' },
+  { q: 'What payment methods are accepted?', a: 'We accept all major credit/debit cards via Stripe. Providers may also accept deposits — all transactions are processed securely.' },
+  { q: 'Is Edenly available outside Germany?', a: 'Currently Edenly is focused on the German market. We plan to expand to Austria and Switzerland soon.' },
+  { q: 'How do I cancel a booking?', a: "You can cancel a booking through your dashboard. Please check the provider's cancellation policy before booking." },
+  { q: 'How is my data protected?', a: 'We comply fully with GDPR. Your data is stored securely in Germany and is never shared with third parties without your consent.' },
+];
+
 const ContactPage = () => {
-  const [form, setForm]     = useState({ name: '', email: '', subject: '', message: '', type: 'general' });
-  const [errors, setErrors] = useState({});
-  const [sent,   setSent]   = useState(false);
+  const [form, setForm]       = useState({ name: '', email: '', subject: '', message: '', type: 'general' });
+  const [errors, setErrors]   = useState({});
+  const [sent, setSent]       = useState(false);
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState('');
+  const [openFaq, setOpenFaq] = useState(0);
 
   const validate = () => {
     const e = {};
@@ -54,7 +118,6 @@ const ContactPage = () => {
     const v = validate();
     if (Object.keys(v).length) { setErrors(v); return; }
     setLoading(true);
-    // Simulate send — wire to backend in Phase 4
     await new Promise((res) => setTimeout(res, 1200));
     setLoading(false);
     setSent(true);
@@ -62,74 +125,100 @@ const ContactPage = () => {
 
   return (
     <AppLayout>
+
       {/* ── Hero ── */}
-      <div style={{
-        textAlign: 'center', padding: 'var(--space-10) 0 var(--space-12)',
-        maxWidth: 580, margin: '0 auto',
-      }}>
-        <p className="section-label" style={{ justifyContent: 'center' }}>Support</p>
-        <h1 style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 'var(--space-4)', color: 'var(--color-text-primary)' }}>
-          Get in touch
+      <div style={{ textAlign: 'center', padding: 'var(--space-12) 0 var(--space-10)', maxWidth: 600, margin: '0 auto' }}>
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          fontSize: 12, fontWeight: 600, letterSpacing: '0.07em', textTransform: 'uppercase',
+          color: 'var(--color-primary)', background: 'rgba(2,65,57,0.07)',
+          borderRadius: 20, padding: '4px 14px', marginBottom: 18,
+        }}>
+          💬 Support
+        </span>
+        <h1 style={{ fontSize: 'var(--font-size-4xl)', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 16, color: 'var(--color-text-primary)', lineHeight: 1.1 }}>
+          We're here to help
         </h1>
         <p style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--font-size-lg)', lineHeight: 1.7 }}>
-          Have a question, need help, or want to partner with us?
-          We'd love to hear from you — our team usually replies within 24 hours.
+          Have a question or need support? Reach out — our team usually replies within 24 hours.
         </p>
       </div>
 
-      {/* ── Contact info cards ── */}
-      <div style={{
-        display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: 'var(--space-4)', marginBottom: 'var(--space-12)',
-      }}
-        className="contact-cards"
-      >
-        <InfoCard icon="✉️" title="Email us"       value="hello@edenly.de"         href="mailto:hello@edenly.de" />
-        <InfoCard icon="📞" title="Call us"         value="+49 30 000 000 00"       href="tel:+4930000000" />
-        <InfoCard icon="📍" title="Visit us"         value="Berlin, Germany"         href="https://maps.google.com" />
+      {/* ── Channel cards ── */}
+      <div className="contact-channels" style={{ display: 'flex', gap: 16, marginBottom: 56 }}>
+        <ChannelCard icon="✉️" label="Email" value="hello@edenly.de" sub="Usually replies within 24h" href="mailto:hello@edenly.de" />
+        <ChannelCard icon="📞" label="Phone" value="+49 30 000 000 00" sub="Mon – Sat, 9:00 – 18:00" href="tel:+4930000000" />
+        <ChannelCard icon="📍" label="Office" value="Berlin, Germany" sub="By appointment only" href="https://maps.google.com" />
       </div>
 
       {/* ── Form + FAQ ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-8)', alignItems: 'start', marginBottom: 'var(--space-16)' }}
-        className="contact-grid"
-      >
-        {/* Form */}
-        <div className="card">
-          <h2 style={{ fontSize: 'var(--font-size-xl)', fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 'var(--space-2)' }}>
-            Send us a message
-          </h2>
-          <p style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--font-size-sm)', marginBottom: 'var(--space-6)' }}>
-            Fill out the form and we'll get back to you shortly.
-          </p>
+      <div className="contact-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32, alignItems: 'start', marginBottom: 80 }}>
+
+        {/* ── Left: form ── */}
+        <div style={{
+          background: 'var(--color-bg-card)',
+          borderRadius: 'var(--radius-xl)',
+          border: '1px solid var(--color-border-light)',
+          boxShadow: 'var(--shadow-sm)',
+          overflow: 'hidden',
+        }}>
+          {/* Form header */}
+          <div style={{ padding: '28px 28px 0' }}>
+            <h2 style={{ fontSize: 'var(--font-size-xl)', fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 6 }}>
+              Send us a message
+            </h2>
+            <p style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--font-size-sm)', marginBottom: 24 }}>
+              Fill out the form and we'll get back to you shortly.
+            </p>
+          </div>
 
           {sent ? (
-            <div style={{ textAlign: 'center', padding: 'var(--space-8) 0' }}>
-              <div style={{ fontSize: 48, marginBottom: 'var(--space-4)' }}>✅</div>
-              <h3 style={{ fontWeight: 700, marginBottom: 'var(--space-2)' }}>Message sent!</h3>
-              <p style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--font-size-sm)' }}>
+            <div style={{ textAlign: 'center', padding: '40px 28px 48px' }}>
+              <div style={{
+                width: 64, height: 64, borderRadius: '50%', margin: '0 auto 20px',
+                background: 'linear-gradient(135deg, rgba(2,65,57,0.1), rgba(73,169,108,0.15))',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28,
+              }}>✅</div>
+              <h3 style={{ fontWeight: 700, fontSize: 'var(--font-size-lg)', marginBottom: 8 }}>Message sent!</h3>
+              <p style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--font-size-sm)', lineHeight: 1.6 }}>
                 Thank you for reaching out. We'll respond to <strong>{form.email}</strong> within 24 hours.
               </p>
-              <button className="btn btn-outline" style={{ marginTop: 'var(--space-5)' }} onClick={() => { setSent(false); setForm({ name: '', email: '', subject: '', message: '', type: 'general' }); }}>
+              <button className="btn btn-outline" style={{ marginTop: 24 }}
+                onClick={() => { setSent(false); setForm({ name: '', email: '', subject: '', message: '', type: 'general' }); }}>
                 Send another
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+            <form onSubmit={handleSubmit} noValidate style={{ padding: '0 28px 28px', display: 'flex', flexDirection: 'column', gap: 16 }}>
               {apiError && <Alert type="error" message={apiError} />}
 
-              {/* Inquiry type */}
-              <FormField label="Inquiry type">
-                <select name="type" value={form.type} onChange={handleChange}>
-                  <option value="general">General inquiry</option>
-                  <option value="support">Technical support</option>
-                  <option value="provider">Become a provider</option>
-                  <option value="billing">Billing & payments</option>
-                  <option value="partnership">Partnership</option>
-                  <option value="press">Press & media</option>
-                </select>
-              </FormField>
+              {/* Type pills */}
+              <div>
+                <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Topic</p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                  {[
+                    { value: 'general', label: 'General' },
+                    { value: 'support', label: 'Support' },
+                    { value: 'provider', label: 'Become a Provider' },
+                    { value: 'billing', label: 'Billing' },
+                    { value: 'partnership', label: 'Partnership' },
+                    { value: 'press', label: 'Press' },
+                  ].map(({ value, label }) => (
+                    <button key={value} type="button"
+                      onClick={() => setForm((p) => ({ ...p, type: value }))}
+                      style={{
+                        padding: '5px 14px', borderRadius: 20, fontSize: 12, fontWeight: 500, cursor: 'pointer',
+                        border: `1.5px solid ${form.type === value ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                        background: form.type === value ? 'var(--color-primary)' : 'transparent',
+                        color: form.type === value ? '#fff' : 'var(--color-text-secondary)',
+                        transition: 'all var(--transition-fast)',
+                      }}
+                    >{label}</button>
+                  ))}
+                </div>
+              </div>
 
-              <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
+              <div style={{ display: 'flex', gap: 12 }}>
                 <FormField label="Full name" error={errors.name} required style={{ flex: 1 }}>
                   <input type="text" name="name" value={form.name} onChange={handleChange} placeholder="Jane Smith"
                     style={errors.name ? { borderColor: 'var(--color-error)' } : {}} />
@@ -158,62 +247,68 @@ const ContactPage = () => {
           )}
         </div>
 
-        {/* FAQ */}
+        {/* ── Right: FAQ ── */}
         <div>
-          <h2 style={{ fontSize: 'var(--font-size-xl)', fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 'var(--space-5)' }}>
-            Frequently asked questions
-          </h2>
-          {[
-            {
-              q: 'How do I book a service?',
-              a: "Search for providers, pick a service and time slot that works for you, and confirm your booking. You'll receive a confirmation by email.",
-            },
-            {
-              q: 'How do I become a provider?',
-              a: 'Register as a provider, complete your profile with your services and location, and our team will review and activate your listing.',
-            },
-            {
-              q: 'What payment methods are accepted?',
-              a: 'We accept all major credit/debit cards via Stripe. Providers may also accept deposits — all transactions are processed securely.',
-            },
-            {
-              q: 'Is Edenly available outside Germany?',
-              a: 'Currently Edenly is focused on the German market. We plan to expand to Austria and Switzerland soon.',
-            },
-            {
-              q: 'How do I cancel a booking?',
-              a: 'You can cancel a booking through your dashboard. Please check the provider\'s cancellation policy before booking.',
-            },
-            {
-              q: 'How is my data protected?',
-              a: 'We comply fully with GDPR. Your data is stored securely in Germany and is never shared with third parties without your consent.',
-            },
-          ].map(({ q, a }, i) => (
-            <details key={i} style={{
-              borderBottom: '1px solid var(--color-border-light)',
-              paddingBottom: 'var(--space-4)', marginBottom: 'var(--space-4)',
-            }}>
-              <summary style={{
-                cursor: 'pointer', fontWeight: 600, fontSize: 'var(--font-size-sm)',
-                color: 'var(--color-text-primary)', lineHeight: 1.5, listStyle: 'none',
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                userSelect: 'none',
-              }}>
-                {q}
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="2.5" strokeLinecap="round">
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </summary>
-              <p style={{ marginTop: 'var(--space-3)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.7 }}>{a}</p>
-            </details>
-          ))}
+          <div style={{ marginBottom: 24 }}>
+            <h2 style={{ fontSize: 'var(--font-size-xl)', fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 6 }}>
+              Frequently asked questions
+            </h2>
+            <p style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--font-size-sm)' }}>
+              Can't find an answer? <a href="mailto:hello@edenly.de" style={{ color: 'var(--color-primary)', fontWeight: 600, textDecoration: 'none' }}>Email us directly →</a>
+            </p>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {FAQS.map(({ q, a }, i) => (
+              <FAQItem key={i} q={q} a={a} open={openFaq === i} onToggle={() => setOpenFaq(openFaq === i ? null : i)} />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Bottom CTA strip ── */}
+      <div style={{
+        background: 'linear-gradient(135deg, var(--color-primary) 0%, #035c4e 100%)',
+        borderRadius: 'var(--radius-xl)',
+        padding: '48px 40px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        gap: 24, marginBottom: 64,
+        flexWrap: 'wrap',
+      }}
+        className="contact-cta"
+      >
+        <div>
+          <h3 style={{ color: '#fff', fontWeight: 700, fontSize: 'var(--font-size-xl)', letterSpacing: '-0.02em', marginBottom: 8 }}>
+            Ready to grow your business?
+          </h3>
+          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 'var(--font-size-sm)', lineHeight: 1.6 }}>
+            Join hundreds of beauty &amp; wellness providers already on Edenly.
+          </p>
+        </div>
+        <div style={{ display: 'flex', gap: 12, flexShrink: 0 }}>
+          <a href="/register" className="btn btn-sm" style={{
+            background: 'rgba(255,255,255,0.15)', border: '1.5px solid rgba(255,255,255,0.3)',
+            color: '#fff', borderRadius: 'var(--radius-md)', padding: '10px 20px',
+            fontSize: 'var(--font-size-sm)', fontWeight: 600, textDecoration: 'none',
+          }}>
+            Learn more
+          </a>
+          <a href="/register" className="btn btn-sm" style={{
+            background: '#fff', border: 'none',
+            color: 'var(--color-primary)', borderRadius: 'var(--radius-md)', padding: '10px 20px',
+            fontSize: 'var(--font-size-sm)', fontWeight: 700, textDecoration: 'none',
+          }}>
+            Get started free →
+          </a>
         </div>
       </div>
 
       <style>{`
-        @media (max-width: 768px) {
-          .contact-cards { grid-template-columns: 1fr !important; }
-          .contact-grid  { grid-template-columns: 1fr !important; }
+        @media (max-width: 900px) {
+          .contact-channels { flex-direction: column !important; }
+          .contact-grid { grid-template-columns: 1fr !important; }
+          .contact-cta { flex-direction: column !important; text-align: center; }
+          .contact-cta > div:last-child { justify-content: center; }
         }
       `}</style>
     </AppLayout>
