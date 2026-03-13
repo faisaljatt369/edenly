@@ -57,7 +57,7 @@ function App() {
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
       {/* ── Root redirect ── */}
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/" element={<Navigate to="/register" replace />} />
 
       {/* ── 404 ── */}
       <Route path="*" element={<NotFoundPage />} />
