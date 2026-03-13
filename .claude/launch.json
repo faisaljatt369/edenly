@@ -1,0 +1,19 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "edenly-backend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 5000,
+      "cwd": "/Users/macbook162019/Documents/edenly/backend"
+    },
+    {
+      "name": "edenly-frontend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 5173,
+      "cwd": "/Users/macbook162019/Documents/edenly/frontend"
+    }
+  ]
+}

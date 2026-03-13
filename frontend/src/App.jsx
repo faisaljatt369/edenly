@@ -18,6 +18,13 @@ import UnauthorizedPage from './pages/errors/UnauthorizedPage';
 // Dashboard (Phase 1 placeholder)
 import DashboardPage from './pages/DashboardPage';
 
+// Contact & Legal
+import ContactPage      from './pages/ContactPage';
+import PrivacyPage      from './pages/legal/PrivacyPage';
+import TermsPage        from './pages/legal/TermsPage';
+import CancellationPage from './pages/legal/CancellationPage';
+import ImpressumPage    from './pages/legal/ImpressumPage';
+
 // Guards
 import ProtectedRoute from './components/common/ProtectedRoute';
 
@@ -33,16 +40,18 @@ function App() {
 
       {/* ── Protected routes ── */}
       <Route path="/dashboard" element={
-        <ProtectedRoute>
-          <DashboardPage />
-        </ProtectedRoute>
+        <ProtectedRoute><DashboardPage /></ProtectedRoute>
+      } />
+      <Route path="/onboarding" element={
+        <ProtectedRoute roles={['provider']}><ProviderOnboardingPage /></ProtectedRoute>
       } />
 
-      <Route path="/onboarding" element={
-        <ProtectedRoute roles={['provider']}>
-          <ProviderOnboardingPage />
-        </ProtectedRoute>
-      } />
+      {/* ── Public pages ── */}
+      <Route path="/contact"      element={<ContactPage />} />
+      <Route path="/privacy"      element={<PrivacyPage />} />
+      <Route path="/terms"        element={<TermsPage />} />
+      <Route path="/cancellation" element={<CancellationPage />} />
+      <Route path="/impressum"    element={<ImpressumPage />} />
 
       {/* ── Error pages ── */}
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
