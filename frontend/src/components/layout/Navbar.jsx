@@ -11,60 +11,110 @@ const NAV_LINKS = [
   { to: '/contact',      label: 'Contact' },
 ];
 
+/* ── Reusable icon components ──────────────────────────────────────────────── */
+const PhoneIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>
+  </svg>
+);
+const MailIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+    <polyline points="22,6 12,13 2,6"/>
+  </svg>
+);
+const ClockIcon = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+  </svg>
+);
+const StarIcon = () => (
+  <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+  </svg>
+);
+
+const Divider = () => (
+  <span style={{ width: 1, height: 14, background: 'rgba(255,255,255,0.18)', flexShrink: 0 }} />
+);
+
+const TopBarLink = ({ href, icon, children }) => (
+  <a href={href} style={{
+    display: 'flex', alignItems: 'center', gap: 5,
+    color: 'rgba(255,255,255,0.75)', textDecoration: 'none',
+    fontSize: 12, fontWeight: 400, letterSpacing: '0.01em',
+    transition: 'color 0.15s',
+    whiteSpace: 'nowrap',
+  }}
+    onMouseEnter={(e) => e.currentTarget.style.color = '#fff'}
+    onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.75)'}
+  >
+    <span style={{ opacity: 0.8 }}>{icon}</span>
+    {children}
+  </a>
+);
+
 /* ── Top bar ───────────────────────────────────────────────────────────────── */
 const TopBar = () => (
   <div style={{
-    background: 'var(--color-primary)',
-    color: 'rgba(255,255,255,0.85)',
-    fontSize: 12,
-    fontWeight: 450,
-    letterSpacing: '0.01em',
+    background: 'linear-gradient(90deg, #013630 0%, var(--color-primary) 40%, #034d43 100%)',
+    borderBottom: '1px solid rgba(255,255,255,0.06)',
   }}>
     <div style={{
       maxWidth: 1440, margin: '0 auto',
-      padding: '7px var(--space-6)',
+      padding: '0 var(--space-6)',
+      height: 36,
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      gap: 'var(--space-4)',
+      gap: 'var(--space-3)',
     }}>
-      {/* Left: contact info */}
-      <div className="topbar-contact" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-5)' }}>
-        <a href="tel:+4930000000" style={{
-          display: 'flex', alignItems: 'center', gap: 6,
-          color: 'rgba(255,255,255,0.8)', textDecoration: 'none',
-          transition: 'color var(--transition-fast)',
-        }}
-          onMouseEnter={(e) => e.currentTarget.style.color = '#fff'}
-          onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.8)'}
-        >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>
-          </svg>
+
+      {/* ── Left: contact ── */}
+      <div className="tb-contact" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)', flexShrink: 0 }}>
+        <TopBarLink href="tel:+4930000000" icon={<PhoneIcon />}>
           +49 30 000 000 00
-        </a>
-        <span style={{ width: 1, height: 12, background: 'rgba(255,255,255,0.2)' }} />
-        <a href="mailto:hello@edenly.de" style={{
-          display: 'flex', alignItems: 'center', gap: 6,
-          color: 'rgba(255,255,255,0.8)', textDecoration: 'none',
-          transition: 'color var(--transition-fast)',
-        }}
-          onMouseEnter={(e) => e.currentTarget.style.color = '#fff'}
-          onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.8)'}
-        >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-            <polyline points="22,6 12,13 2,6"/>
-          </svg>
+        </TopBarLink>
+        <Divider />
+        <TopBarLink href="mailto:hello@edenly.de" icon={<MailIcon />}>
           hello@edenly.de
-        </a>
+        </TopBarLink>
+        <Divider />
+        <span className="tb-hours" style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'rgba(255,255,255,0.55)', whiteSpace: 'nowrap' }}>
+          <ClockIcon /> Mon – Sat, 9:00 – 18:00
+        </span>
       </div>
 
-      {/* Right: social icons + tagline */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
-        <span className="topbar-tagline" style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11 }}>
-          Germany's #1 Beauty & Wellness Marketplace
+      {/* ── Centre: promo pill ── */}
+      <div className="tb-promo" style={{
+        display: 'flex', alignItems: 'center', gap: 8,
+        background: 'rgba(255,255,255,0.08)',
+        border: '1px solid rgba(255,255,255,0.14)',
+        borderRadius: 20,
+        padding: '3px 14px',
+        flexShrink: 0,
+      }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--color-accent)', fontSize: 11 }}>
+          <StarIcon /><StarIcon /><StarIcon /><StarIcon /><StarIcon />
         </span>
-        <span className="topbar-tagline" style={{ width: 1, height: 12, background: 'rgba(255,255,255,0.2)', display: 'inline-block' }} />
-        <SocialIcons size={16} gap={2} light />
+        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.9)', fontWeight: 500, letterSpacing: '0.01em', whiteSpace: 'nowrap' }}>
+          Germany's #1 Beauty &amp; Wellness Marketplace
+        </span>
+        <Link to="/register" style={{
+          fontSize: 11, fontWeight: 600, color: 'var(--color-accent)',
+          textDecoration: 'none', borderLeft: '1px solid rgba(255,255,255,0.18)',
+          paddingLeft: 10, marginLeft: 2, whiteSpace: 'nowrap',
+          letterSpacing: '0.02em',
+        }}
+          onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
+          onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+        >
+          Join free →
+        </Link>
+      </div>
+
+      {/* ── Right: social icons ── */}
+      <div className="tb-social" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', flexShrink: 0 }}>
+        <Divider />
+        <SocialIcons size={15} gap={2} light />
       </div>
     </div>
   </div>
@@ -110,8 +160,8 @@ const Navbar = () => {
 
   return (
     <>
-      {/* ── Top bar (hidden on scroll / mobile) ── */}
-      <div className="topbar-wrapper" style={{ position: 'sticky', top: 0, zIndex: 201 }}>
+      {/* ── Sticky wrapper: top bar + header move as one ── */}
+      <div style={{ position: 'sticky', top: 0, zIndex: 201 }}>
         <TopBar />
 
         {/* ── Main header ── */}
@@ -141,7 +191,6 @@ const Navbar = () => {
 
             {/* Right side: auth */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', flexShrink: 0 }}>
-
               {isAuthenticated ? (
                 <div ref={dropRef} style={{ position: 'relative' }}>
                   <button onClick={() => setDropOpen((p) => !p)} style={{
@@ -227,7 +276,7 @@ const Navbar = () => {
             </div>
           </nav>
 
-          {/* Mobile menu */}
+          {/* ── Mobile menu ── */}
           {menuOpen && (
             <div style={{
               borderTop: '1px solid var(--color-border-light)',
@@ -250,24 +299,17 @@ const Navbar = () => {
                   <Link to="/register" className="btn btn-primary btn-sm btn-block">Get Started</Link>
                 </div>
               )}
-              {/* Contact info in mobile menu */}
+              {/* Contact + social in mobile menu */}
               <div style={{
                 marginTop: 'var(--space-4)', paddingTop: 'var(--space-4)',
                 borderTop: '1px solid var(--color-border-light)',
                 display: 'flex', flexDirection: 'column', gap: 'var(--space-2)',
               }}>
                 <a href="tel:+4930000000" style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)', textDecoration: 'none' }}>
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>
-                  </svg>
-                  +49 30 000 000 00
+                  <PhoneIcon /> +49 30 000 000 00
                 </a>
                 <a href="mailto:hello@edenly.de" style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)', textDecoration: 'none' }}>
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                    <polyline points="22,6 12,13 2,6"/>
-                  </svg>
-                  hello@edenly.de
+                  <MailIcon /> hello@edenly.de
                 </a>
                 <div style={{ marginTop: 'var(--space-2)' }}>
                   <SocialIcons size={28} gap={4} />
@@ -279,15 +321,19 @@ const Navbar = () => {
       </div>
 
       <style>{`
+        @media (max-width: 1100px) {
+          .tb-promo { display: none !important; }
+        }
         @media (max-width: 900px) {
           .nav-desktop { display: none !important; }
+          .tb-hours { display: none !important; }
         }
         @media (max-width: 640px) {
           .nav-hamburger { display: flex !important; }
-          .topbar-tagline { display: none !important; }
+          .tb-social { display: none !important; }
         }
         @media (max-width: 480px) {
-          .topbar-contact { display: none !important; }
+          .tb-contact { display: none !important; }
         }
       `}</style>
     </>
