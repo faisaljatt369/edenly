@@ -28,12 +28,6 @@ const ClockIcon = () => (
     <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
   </svg>
 );
-const StarIcon = () => (
-  <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-  </svg>
-);
-
 const Divider = () => (
   <span style={{ width: 1, height: 14, background: 'rgba(255,255,255,0.18)', flexShrink: 0 }} />
 );
@@ -57,64 +51,29 @@ const TopBarLink = ({ href, icon, children }) => (
 /* ── Top bar ───────────────────────────────────────────────────────────────── */
 const TopBar = () => (
   <div style={{
-    background: 'linear-gradient(90deg, #013630 0%, var(--color-primary) 40%, #034d43 100%)',
-    borderBottom: '1px solid rgba(255,255,255,0.06)',
+    background: 'linear-gradient(90deg, #012e27 0%, #024139 50%, #013630 100%)',
   }}>
     <div style={{
       maxWidth: 1440, margin: '0 auto',
       padding: '0 var(--space-6)',
-      height: 36,
+      height: 32,
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      gap: 'var(--space-3)',
     }}>
 
-      {/* ── Left: contact ── */}
-      <div className="tb-contact" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)', flexShrink: 0 }}>
-        <TopBarLink href="tel:+4930000000" icon={<PhoneIcon />}>
-          +49 30 000 000 00
-        </TopBarLink>
+      {/* Left: contact */}
+      <div className="tb-contact" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
+        <TopBarLink href="tel:+4930000000" icon={<PhoneIcon />}>+49 30 000 000 00</TopBarLink>
         <Divider />
-        <TopBarLink href="mailto:hello@edenly.de" icon={<MailIcon />}>
-          hello@edenly.de
-        </TopBarLink>
+        <TopBarLink href="mailto:hello@edenly.de" icon={<MailIcon />}>hello@edenly.de</TopBarLink>
         <Divider />
-        <span className="tb-hours" style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'rgba(255,255,255,0.55)', whiteSpace: 'nowrap' }}>
-          <ClockIcon /> Mon – Sat, 9:00 – 18:00
+        <span className="tb-hours" style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: 'rgba(255,255,255,0.45)', whiteSpace: 'nowrap' }}>
+          <ClockIcon /> Mon – Sat &nbsp;9:00 – 18:00
         </span>
       </div>
 
-      {/* ── Centre: promo pill ── */}
-      <div className="tb-promo" style={{
-        display: 'flex', alignItems: 'center', gap: 8,
-        background: 'rgba(255,255,255,0.08)',
-        border: '1px solid rgba(255,255,255,0.14)',
-        borderRadius: 20,
-        padding: '3px 14px',
-        flexShrink: 0,
-      }}>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--color-accent)', fontSize: 11 }}>
-          <StarIcon /><StarIcon /><StarIcon /><StarIcon /><StarIcon />
-        </span>
-        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.9)', fontWeight: 500, letterSpacing: '0.01em', whiteSpace: 'nowrap' }}>
-          Germany's #1 Beauty &amp; Wellness Marketplace
-        </span>
-        <Link to="/register" style={{
-          fontSize: 11, fontWeight: 600, color: 'var(--color-accent)',
-          textDecoration: 'none', borderLeft: '1px solid rgba(255,255,255,0.18)',
-          paddingLeft: 10, marginLeft: 2, whiteSpace: 'nowrap',
-          letterSpacing: '0.02em',
-        }}
-          onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
-          onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
-        >
-          Join free →
-        </Link>
-      </div>
-
-      {/* ── Right: social icons ── */}
-      <div className="tb-social" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', flexShrink: 0 }}>
-        <Divider />
-        <SocialIcons size={15} gap={2} light />
+      {/* Right: social */}
+      <div className="tb-social" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+        <SocialIcons size={14} gap={1} light />
       </div>
     </div>
   </div>
@@ -321,9 +280,6 @@ const Navbar = () => {
       </div>
 
       <style>{`
-        @media (max-width: 1100px) {
-          .tb-promo { display: none !important; }
-        }
         @media (max-width: 900px) {
           .nav-desktop { display: none !important; }
           .tb-hours { display: none !important; }
