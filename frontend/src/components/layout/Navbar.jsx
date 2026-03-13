@@ -28,22 +28,22 @@ const ClockIcon = () => (
     <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
   </svg>
 );
-const Divider = () => (
-  <span style={{ width: 1, height: 14, background: 'rgba(255,255,255,0.18)', flexShrink: 0 }} />
+const Pipe = () => (
+  <span style={{ color: 'rgba(255,255,255,0.22)', fontSize: 13, lineHeight: 1, userSelect: 'none', margin: '0 2px' }}>|</span>
 );
 
 const TopBarLink = ({ href, icon, children }) => (
   <a href={href} style={{
-    display: 'flex', alignItems: 'center', gap: 5,
-    color: 'rgba(255,255,255,0.75)', textDecoration: 'none',
-    fontSize: 12, fontWeight: 400, letterSpacing: '0.01em',
+    display: 'flex', alignItems: 'center', gap: 6,
+    color: 'rgba(255,255,255,0.82)', textDecoration: 'none',
+    fontSize: 12.5, fontWeight: 400, letterSpacing: '0.015em',
     transition: 'color 0.15s',
     whiteSpace: 'nowrap',
   }}
     onMouseEnter={(e) => e.currentTarget.style.color = '#fff'}
-    onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.75)'}
+    onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.82)'}
   >
-    <span style={{ opacity: 0.8 }}>{icon}</span>
+    <span style={{ color: 'rgba(255,255,255,0.5)', display: 'flex' }}>{icon}</span>
     {children}
   </a>
 );
@@ -51,29 +51,34 @@ const TopBarLink = ({ href, icon, children }) => (
 /* ── Top bar ───────────────────────────────────────────────────────────────── */
 const TopBar = () => (
   <div style={{
-    background: 'linear-gradient(90deg, #012e27 0%, #024139 50%, #013630 100%)',
+    background: 'linear-gradient(135deg, #01352d 0%, #02503f 45%, #024a3a 100%)',
+    borderBottom: '1px solid rgba(255,255,255,0.07)',
+    boxShadow: 'inset 0 -1px 0 rgba(0,0,0,0.15)',
   }}>
     <div style={{
       maxWidth: 1440, margin: '0 auto',
       padding: '0 var(--space-6)',
-      height: 32,
+      height: 36,
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
     }}>
 
       {/* Left: contact */}
-      <div className="tb-contact" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
+      <div className="tb-contact" style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
         <TopBarLink href="tel:+4930000000" icon={<PhoneIcon />}>+49 30 000 000 00</TopBarLink>
-        <Divider />
+        <Pipe />
         <TopBarLink href="mailto:hello@edenly.de" icon={<MailIcon />}>hello@edenly.de</TopBarLink>
-        <Divider />
-        <span className="tb-hours" style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: 'rgba(255,255,255,0.45)', whiteSpace: 'nowrap' }}>
+        <Pipe />
+        <span className="tb-hours" style={{
+          display: 'flex', alignItems: 'center', gap: 5,
+          fontSize: 12, color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap',
+        }}>
           <ClockIcon /> Mon – Sat &nbsp;9:00 – 18:00
         </span>
       </div>
 
       {/* Right: social */}
       <div className="tb-social" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
-        <SocialIcons size={14} gap={1} light />
+        <SocialIcons size={16} gap={3} light />
       </div>
     </div>
   </div>
