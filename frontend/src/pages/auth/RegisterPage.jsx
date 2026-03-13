@@ -74,8 +74,6 @@ const RegisterPage = () => {
   const [form, setForm] = useState({
     first_name: '', last_name: '', email: '', password: '', confirm: '',
     role: 'customer',
-    // Provider-only fields
-    business_name: '', phone: '',
     // GDPR consents
     consent_terms: false, consent_privacy: false, consent_provider_legal: false,
   });
@@ -95,8 +93,6 @@ const RegisterPage = () => {
     if (form.password !== form.confirm) e.confirm = 'Passwords do not match';
 
     if (isProvider) {
-      if (!form.business_name.trim()) e.business_name = 'Business name is required';
-      if (!form.phone.trim())         e.phone         = 'Phone number is required';
       if (!form.consent_provider_legal) e.consent_provider_legal = 'This declaration is required';
     }
 
@@ -131,15 +127,11 @@ const RegisterPage = () => {
         password:   form.password,
         role:       form.role,
         consents: {
-          terms:           form.consent_terms,
-          privacy:         form.consent_privacy,
-          provider_legal:  isProvider ? form.consent_provider_legal : false,
+          terms:          form.consent_terms,
+          privacy:        form.consent_privacy,
+          provider_legal: isProvider ? form.consent_provider_legal : false,
         },
       };
-      if (isProvider) {
-        payload.business_name = form.business_name.trim();
-        payload.phone         = form.phone.trim();
-      }
 
       const { data } = await registerApi(payload);
       login(data.accessToken, data.user);
@@ -180,34 +172,6 @@ const RegisterPage = () => {
               style={errors.last_name ? { borderColor: 'var(--color-error)' } : {}} />
           </FormField>
         </div>
-
-        {/* Provider-only fields — animated in/out */}
-        {isProvider && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-            <div style={{
-              padding: 'var(--space-4)',
-              background: 'rgba(2,65,57,0.04)',
-              borderRadius: 'var(--radius-md)',
-              border: '1px solid rgba(2,65,57,0.12)',
-            }}>
-              <p style={{ fontSize: 'var(--font-size-xs)', fontWeight: 600, color: 'var(--color-primary)', marginBottom: 'var(--space-3)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                Business Information
-              </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-                <FormField label="Business name" error={errors.business_name} required>
-                  <input type="text" name="business_name" value={form.business_name} onChange={handleChange}
-                    placeholder="e.g. Jane's Beauty Studio"
-                    style={errors.business_name ? { borderColor: 'var(--color-error)' } : {}} />
-                </FormField>
-                <FormField label="Phone number" error={errors.phone} required hint="Used for booking confirmations">
-                  <input type="tel" name="phone" value={form.phone} onChange={handleChange}
-                    placeholder="+49 30 000 000 00" autoComplete="tel"
-                    style={errors.phone ? { borderColor: 'var(--color-error)' } : {}} />
-                </FormField>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Email */}
         <FormField label="Email address" error={errors.email} required>
