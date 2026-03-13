@@ -46,7 +46,7 @@ const Footer = () => {
     }}>
       {/* ── Main footer grid ── */}
       <div style={{
-        maxWidth: 1200, margin: '0 auto',
+        maxWidth: 1440, margin: '0 auto',
         padding: 'var(--space-12) var(--space-6) var(--space-8)',
         display: 'grid',
         gridTemplateColumns: '2fr 1fr 1fr 1fr',
@@ -114,11 +114,11 @@ const Footer = () => {
       </div>
 
       {/* ── Divider ── */}
-      <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', maxWidth: 1200, margin: '0 auto' }} />
+      <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', maxWidth: 1440, margin: '0 auto' }} />
 
       {/* ── Bottom bar ── */}
       <div style={{
-        maxWidth: 1200, margin: '0 auto',
+        maxWidth: 1440, margin: '0 auto',
         padding: 'var(--space-5) var(--space-6)',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         flexWrap: 'wrap', gap: 'var(--space-3)',

@@ -17,6 +17,11 @@ router.post('/register', authLimiter, [
   body('email').isEmail().withMessage('Valid email is required').normalizeEmail(),
   strongPassword,
   body('role').optional().isIn(['customer', 'provider']).withMessage('Invalid role'),
+  body('business_name').optional({ nullable: true }).trim(),
+  body('phone').optional({ nullable: true }).trim(),
+  body('consents.terms').optional().isBoolean(),
+  body('consents.privacy').optional().isBoolean(),
+  body('consents.provider_legal').optional().isBoolean(),
 ], validate, register);
 
 router.post('/login', authLimiter, [

@@ -58,7 +58,7 @@ const Navbar = () => {
         transition: 'box-shadow var(--transition-base)',
       }}>
         <nav style={{
-          maxWidth: 1200, margin: '0 auto',
+          maxWidth: 1440, margin: '0 auto',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '0 var(--space-6)', height: 68,
         }}>

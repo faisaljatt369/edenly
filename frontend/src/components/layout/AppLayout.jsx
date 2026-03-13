@@ -6,7 +6,7 @@ const AppLayout = ({ children, fullWidth = false }) => (
     <Navbar />
     <main style={{
       flex: 1,
-      maxWidth: fullWidth ? '100%' : 1200,
+      maxWidth: fullWidth ? '100%' : 1440,
       width: '100%',
       margin: '0 auto',
       padding: fullWidth ? 0 : 'var(--space-8) var(--space-6)',

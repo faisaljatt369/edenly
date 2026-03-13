@@ -14,7 +14,13 @@ const REFRESH_COOKIE_OPTIONS = {
 // ── Register ─────────────────────────────────────────────────────────────────
 const register = async (req, res, next) => {
   try {
-    const { first_name, last_name, email, password, role = 'customer' } = req.body;
+    const {
+      first_name, last_name, email, password,
+      role = 'customer',
+      business_name = null,
+      phone = null,
+      consents = {},
+    } = req.body;
 
     // Check email unique
     const exists = await db.query('SELECT id FROM users WHERE email = $1', [email.toLowerCase()]);
@@ -24,22 +30,44 @@ const register = async (req, res, next) => {
     const validRoles = ['customer', 'provider'];
     if (!validRoles.includes(role)) return error(res, 'Invalid role', 400);
 
+    // Enforce required consents
+    if (!consents.terms || !consents.privacy) {
+      return error(res, 'You must accept the Terms of Service and Privacy Policy', 422);
+    }
+    if (role === 'provider' && !consents.provider_legal) {
+      return error(res, 'Providers must confirm legal compliance', 422);
+    }
+
     const passwordHash = await hashPassword(password);
 
-    // Insert user
+    // Insert user (phone stored on user row)
     const { rows } = await db.query(
-      `INSERT INTO users (first_name, last_name, email, password_hash, role, is_email_verified, is_active, updated_at)
-       VALUES ($1, $2, $3, $4, $5, false, true, NOW())
-       RETURNING id, first_name, last_name, email, role, is_email_verified, created_at`,
-      [first_name.trim(), last_name.trim(), email.toLowerCase().trim(), passwordHash, role]
+      `INSERT INTO users (first_name, last_name, email, password_hash, role, phone, is_email_verified, is_active, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, false, true, NOW())
+       RETURNING id, first_name, last_name, email, role, phone, is_email_verified, created_at`,
+      [first_name.trim(), last_name.trim(), email.toLowerCase().trim(), passwordHash, role, phone ? phone.trim() : null]
     );
     const user = rows[0];
 
-    // Create provider_profile row if provider
+    // Record GDPR consents
+    const clientIp  = req.ip || null;
+    const userAgent = req.get('User-Agent') || null;
+    const consentTypes = ['terms', 'privacy', ...(role === 'provider' ? ['provider_legal'] : [])];
+    for (const type of consentTypes) {
+      await db.query(
+        `INSERT INTO legal_consents (user_id, consent_type, version, ip_address, user_agent)
+         VALUES ($1, $2, '1.0', $3, $4)`,
+        [user.id, type, clientIp, userAgent]
+      );
+    }
+
+    // Create provider_profile row if provider (with business_name)
     if (role === 'provider') {
       await db.query(
-        'INSERT INTO provider_profiles (user_id) VALUES ($1) ON CONFLICT (user_id) DO NOTHING',
-        [user.id]
+        `INSERT INTO provider_profiles (user_id, business_name)
+         VALUES ($1, $2)
+         ON CONFLICT (user_id) DO UPDATE SET business_name = EXCLUDED.business_name`,
+        [user.id, business_name ? business_name.trim() : null]
       );
     }
 

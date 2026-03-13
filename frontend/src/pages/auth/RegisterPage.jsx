@@ -31,14 +31,59 @@ const RoleCard = ({ value, selected, onSelect, icon, title, desc }) => (
   </button>
 );
 
+const Checkbox = ({ name, checked, onChange, error, children }) => (
+  <label style={{
+    display: 'flex', alignItems: 'flex-start', gap: 'var(--space-3)',
+    cursor: 'pointer',
+  }}>
+    <div style={{ position: 'relative', flexShrink: 0, marginTop: 2 }}>
+      <input
+        type="checkbox" name={name} checked={checked} onChange={onChange}
+        style={{ position: 'absolute', opacity: 0, width: 18, height: 18, cursor: 'pointer', margin: 0 }}
+      />
+      <div style={{
+        width: 18, height: 18, borderRadius: 4,
+        border: `2px solid ${error ? 'var(--color-error)' : checked ? 'var(--color-primary)' : 'var(--color-border)'}`,
+        background: checked ? 'var(--color-primary)' : 'var(--color-bg-card)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        transition: 'all var(--transition-fast)',
+        pointerEvents: 'none',
+      }}>
+        {checked && (
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+            <polyline points="2,6 5,9 10,3" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        )}
+      </div>
+    </div>
+    <div>
+      <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
+        {children}
+      </span>
+      {error && (
+        <p style={{ fontSize: 11, color: 'var(--color-error)', marginTop: 2 }}>{error}</p>
+      )}
+    </div>
+  </label>
+);
+
 const RegisterPage = () => {
   const navigate  = useNavigate();
   const { login } = useAuth();
 
-  const [form, setForm]   = useState({ first_name: '', last_name: '', email: '', password: '', confirm: '', role: 'customer' });
+  const [form, setForm] = useState({
+    first_name: '', last_name: '', email: '', password: '', confirm: '',
+    role: 'customer',
+    // Provider-only fields
+    business_name: '', phone: '',
+    // GDPR consents
+    consent_terms: false, consent_privacy: false, consent_provider_legal: false,
+  });
   const [errors, setErrors] = useState({});
   const [apiError, setApiError] = useState('');
   const [loading, setLoading]   = useState(false);
+
+  const isProvider = form.role === 'provider';
 
   const validate = () => {
     const e = {};
@@ -48,13 +93,29 @@ const RegisterPage = () => {
     if (!form.password)          e.password   = 'Password is required';
     else if (form.password.length < 8) e.password = 'Password must be at least 8 characters';
     if (form.password !== form.confirm) e.confirm = 'Passwords do not match';
+
+    if (isProvider) {
+      if (!form.business_name.trim()) e.business_name = 'Business name is required';
+      if (!form.phone.trim())         e.phone         = 'Phone number is required';
+      if (!form.consent_provider_legal) e.consent_provider_legal = 'This declaration is required';
+    }
+
+    if (!form.consent_terms)   e.consent_terms   = 'You must accept the Terms of Service';
+    if (!form.consent_privacy) e.consent_privacy = 'You must accept the Privacy Policy';
+
     return e;
   };
 
   const handleChange = (e) => {
-    setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
-    setErrors((p) => ({ ...p, [e.target.name]: '' }));
+    const { name, value, type, checked } = e.target;
+    setForm((p) => ({ ...p, [name]: type === 'checkbox' ? checked : value }));
+    setErrors((p) => ({ ...p, [name]: '' }));
     setApiError('');
+  };
+
+  const handleRoleChange = (role) => {
+    setForm((p) => ({ ...p, role }));
+    setErrors({});
   };
 
   const handleSubmit = async (e) => {
@@ -63,13 +124,24 @@ const RegisterPage = () => {
     if (Object.keys(v).length) { setErrors(v); return; }
     setLoading(true);
     try {
-      const { data } = await registerApi({
+      const payload = {
         first_name: form.first_name.trim(),
         last_name:  form.last_name.trim(),
         email:      form.email.trim(),
         password:   form.password,
         role:       form.role,
-      });
+        consents: {
+          terms:           form.consent_terms,
+          privacy:         form.consent_privacy,
+          provider_legal:  isProvider ? form.consent_provider_legal : false,
+        },
+      };
+      if (isProvider) {
+        payload.business_name = form.business_name.trim();
+        payload.phone         = form.phone.trim();
+      }
+
+      const { data } = await registerApi(payload);
       login(data.accessToken, data.user);
       navigate(form.role === 'provider' ? '/onboarding' : '/dashboard');
     } catch (err) {
@@ -88,13 +160,14 @@ const RegisterPage = () => {
         <div>
           <label className="form-label" style={{ display: 'block', marginBottom: 'var(--space-3)' }}>I want to…</label>
           <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
-            <RoleCard value="customer" selected={form.role === 'customer'} onSelect={(v) => setForm((p) => ({ ...p, role: v }))}
+            <RoleCard value="customer" selected={form.role === 'customer'} onSelect={handleRoleChange}
               icon="👤" title="Book Services" desc="Discover and book top beauty & wellness providers." />
-            <RoleCard value="provider" selected={form.role === 'provider'} onSelect={(v) => setForm((p) => ({ ...p, role: v }))}
+            <RoleCard value="provider" selected={form.role === 'provider'} onSelect={handleRoleChange}
               icon="✂️" title="Offer Services" desc="Grow your business and manage bookings online." />
           </div>
         </div>
 
+        {/* Full name */}
         <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
           <FormField label="First name" error={errors.first_name} required style={{ flex: 1 }}>
             <input type="text" name="first_name" value={form.first_name} onChange={handleChange}
@@ -108,12 +181,42 @@ const RegisterPage = () => {
           </FormField>
         </div>
 
+        {/* Provider-only fields — animated in/out */}
+        {isProvider && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+            <div style={{
+              padding: 'var(--space-4)',
+              background: 'rgba(2,65,57,0.04)',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid rgba(2,65,57,0.12)',
+            }}>
+              <p style={{ fontSize: 'var(--font-size-xs)', fontWeight: 600, color: 'var(--color-primary)', marginBottom: 'var(--space-3)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Business Information
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+                <FormField label="Business name" error={errors.business_name} required>
+                  <input type="text" name="business_name" value={form.business_name} onChange={handleChange}
+                    placeholder="e.g. Jane's Beauty Studio"
+                    style={errors.business_name ? { borderColor: 'var(--color-error)' } : {}} />
+                </FormField>
+                <FormField label="Phone number" error={errors.phone} required hint="Used for booking confirmations">
+                  <input type="tel" name="phone" value={form.phone} onChange={handleChange}
+                    placeholder="+49 30 000 000 00" autoComplete="tel"
+                    style={errors.phone ? { borderColor: 'var(--color-error)' } : {}} />
+                </FormField>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Email */}
         <FormField label="Email address" error={errors.email} required>
           <input type="email" name="email" value={form.email} onChange={handleChange}
             placeholder="you@example.com" autoComplete="email"
             style={errors.email ? { borderColor: 'var(--color-error)' } : {}} />
         </FormField>
 
+        {/* Password */}
         <FormField label="Password" error={errors.password} hint="At least 8 characters" required>
           <PasswordInput name="password" value={form.password} onChange={handleChange}
             placeholder="Create a password" autoComplete="new-password" />
@@ -124,14 +227,43 @@ const RegisterPage = () => {
             placeholder="Repeat your password" autoComplete="new-password" />
         </FormField>
 
+        {/* GDPR Consent section */}
+        <div style={{
+          display: 'flex', flexDirection: 'column', gap: 'var(--space-3)',
+          padding: 'var(--space-4)',
+          background: 'var(--color-bg-muted)',
+          borderRadius: 'var(--radius-md)',
+          border: '1px solid var(--color-border-light)',
+        }}>
+          <p style={{ fontSize: 'var(--font-size-xs)', fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 'var(--space-1)' }}>
+            Required agreements
+          </p>
+
+          <Checkbox name="consent_terms" checked={form.consent_terms} onChange={handleChange} error={errors.consent_terms}>
+            I agree to the{' '}
+            <Link to="/terms" target="_blank" style={{ color: 'var(--color-primary)', fontWeight: 600 }}>Terms of Service</Link>
+            {' '}*
+          </Checkbox>
+
+          <Checkbox name="consent_privacy" checked={form.consent_privacy} onChange={handleChange} error={errors.consent_privacy}>
+            I agree to the{' '}
+            <Link to="/privacy" target="_blank" style={{ color: 'var(--color-primary)', fontWeight: 600 }}>Privacy Policy</Link>
+            {' '}and consent to the processing of my personal data in accordance with the GDPR *
+          </Checkbox>
+
+          {isProvider && (
+            <Checkbox name="consent_provider_legal" checked={form.consent_provider_legal} onChange={handleChange} error={errors.consent_provider_legal}>
+              I confirm that I am legally entitled to offer the listed services and that I am solely responsible for complying with all applicable tax, licensing, and business regulations in my jurisdiction *
+            </Checkbox>
+          )}
+        </div>
+
         <button type="submit" className="btn btn-primary btn-block btn-lg" disabled={loading}>
-          {loading ? <LoadingSpinner size={18} color="#fff" /> : `Create ${form.role === 'provider' ? 'Provider' : ''} Account`}
+          {loading ? <LoadingSpinner size={18} color="#fff" /> : `Create ${isProvider ? 'Provider' : ''} Account`}
         </button>
 
-        <p style={{ textAlign: 'center', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
-          By creating an account, you agree to our{' '}
-          <Link to="/terms" style={{ color: 'var(--color-primary)' }}>Terms</Link> and{' '}
-          <Link to="/privacy" style={{ color: 'var(--color-primary)' }}>Privacy Policy</Link>.
+        <p style={{ textAlign: 'center', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>
+          * Required fields
         </p>
 
         <p style={{ textAlign: 'center', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>
