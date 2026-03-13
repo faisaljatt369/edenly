@@ -4,6 +4,13 @@ import { useAuth } from '../../hooks/useAuth';
 import Logo from '../common/Logo';
 import SocialIcons from '../common/SocialIcons';
 
+/* ── Language context (module-level, lightweight) ───────────────────────── */
+const LANGUAGES = [
+  { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
+  { code: 'en', label: 'English', flag: '🇬🇧' },
+];
+const getStoredLang = () => localStorage.getItem('edenly_lang') || 'de';
+
 const NAV_LINKS = [
   { to: '/providers',    label: 'Find Providers' },
   { to: '/how-it-works', label: 'How It Works' },
@@ -31,6 +38,134 @@ const ClockIcon = () => (
 const Pipe = () => (
   <span style={{ color: 'rgba(255,255,255,0.22)', fontSize: 13, lineHeight: 1, userSelect: 'none', margin: '0 2px' }}>|</span>
 );
+
+/* ── Language Switcher ─────────────────────────────────────────────────── */
+const GlobeIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <line x1="2" y1="12" x2="22" y2="12"/>
+    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+  </svg>
+);
+
+const LanguageSwitcher = () => {
+  const [lang, setLang]     = useState(getStoredLang);
+  const [open, setOpen]     = useState(false);
+  const ref                 = useRef(null);
+
+  useEffect(() => {
+    const fn = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', fn);
+    return () => document.removeEventListener('mousedown', fn);
+  }, []);
+
+  const select = (code) => {
+    setLang(code);
+    localStorage.setItem('edenly_lang', code);
+    setOpen(false);
+  };
+
+  const current = LANGUAGES.find((l) => l.code === lang) || LANGUAGES[0];
+
+  return (
+    <div ref={ref} style={{ position: 'relative', flexShrink: 0 }}>
+      <button
+        onClick={() => setOpen((p) => !p)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 5,
+          background: 'var(--color-bg-muted)',
+          border: '1.5px solid var(--color-border)',
+          borderRadius: 'var(--radius-full)',
+          padding: '4px 10px 4px 8px',
+          cursor: 'pointer',
+          fontSize: 'var(--font-size-xs)',
+          fontWeight: 600,
+          color: 'var(--color-text-primary)',
+          letterSpacing: '0.04em',
+          transition: 'border-color var(--transition-fast), background var(--transition-fast)',
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-primary)'; e.currentTarget.style.background = 'rgba(2,65,57,0.05)'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-border)'; e.currentTarget.style.background = 'var(--color-bg-muted)'; }}
+      >
+        <span style={{ color: 'var(--color-text-muted)', display: 'flex' }}><GlobeIcon /></span>
+        <span style={{ fontSize: 13 }}>{current.flag}</span>
+        <span>{current.code.toUpperCase()}</span>
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="2.5" strokeLinecap="round">
+          <polyline points={open ? '18 15 12 9 6 15' : '6 9 12 15 18 9'} />
+        </svg>
+      </button>
+
+      {open && (
+        <div style={{
+          position: 'absolute', top: 'calc(100% + 8px)', right: 0,
+          minWidth: 148,
+          background: 'var(--color-bg-card)',
+          borderRadius: 'var(--radius-lg)',
+          border: '1px solid var(--color-border-light)',
+          boxShadow: 'var(--shadow-lg)',
+          overflow: 'hidden',
+          zIndex: 300,
+        }}>
+          {LANGUAGES.map((l) => (
+            <button
+              key={l.code}
+              onClick={() => select(l.code)}
+              style={{
+                width: '100%', display: 'flex', alignItems: 'center', gap: 10,
+                padding: '9px 14px',
+                fontSize: 'var(--font-size-sm)',
+                fontWeight: lang === l.code ? 600 : 400,
+                color: lang === l.code ? 'var(--color-primary)' : 'var(--color-text-primary)',
+                background: lang === l.code ? 'rgba(2,65,57,0.05)' : 'transparent',
+                border: 'none', cursor: 'pointer', textAlign: 'left',
+                transition: 'background var(--transition-fast)',
+              }}
+              onMouseEnter={(e) => { if (lang !== l.code) e.currentTarget.style.background = 'var(--color-bg-muted)'; }}
+              onMouseLeave={(e) => { if (lang !== l.code) e.currentTarget.style.background = 'transparent'; }}
+            >
+              <span style={{ fontSize: 16 }}>{l.flag}</span>
+              <span>{l.label}</span>
+              {lang === l.code && (
+                <svg style={{ marginLeft: 'auto' }} width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const MobileLangPicker = () => {
+  const [lang, setLang] = useState(getStoredLang);
+  const select = (code) => { setLang(code); localStorage.setItem('edenly_lang', code); };
+  return (
+    <div style={{ marginTop: 'var(--space-3)', paddingTop: 'var(--space-3)', borderTop: '1px solid var(--color-border-light)' }}>
+      <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>Language</p>
+      <div style={{ display: 'flex', gap: 8 }}>
+        {LANGUAGES.map((l) => (
+          <button
+            key={l.code}
+            onClick={() => select(l.code)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '6px 14px',
+              borderRadius: 'var(--radius-full)',
+              border: `1.5px solid ${lang === l.code ? 'var(--color-primary)' : 'var(--color-border)'}`,
+              background: lang === l.code ? 'rgba(2,65,57,0.06)' : 'transparent',
+              color: lang === l.code ? 'var(--color-primary)' : 'var(--color-text-secondary)',
+              fontSize: 'var(--font-size-xs)', fontWeight: 600, cursor: 'pointer',
+            }}
+          >
+            <span>{l.flag}</span> {l.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const TopBarLink = ({ href, icon, children }) => (
   <a href={href} style={{
@@ -153,8 +288,9 @@ const Navbar = () => {
               ))}
             </div>
 
-            {/* Right side: auth */}
+            {/* Right side: lang + auth */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', flexShrink: 0 }}>
+              <div className="nav-lang-switcher"><LanguageSwitcher /></div>
               {isAuthenticated ? (
                 <div ref={dropRef} style={{ position: 'relative' }}>
                   <button onClick={() => setDropOpen((p) => !p)} style={{
@@ -263,6 +399,9 @@ const Navbar = () => {
                   <Link to="/register" className="btn btn-primary btn-sm btn-block">Get Started</Link>
                 </div>
               )}
+              {/* Language in mobile menu */}
+              <MobileLangPicker />
+
               {/* Contact + social in mobile menu */}
               <div style={{
                 marginTop: 'var(--space-4)', paddingTop: 'var(--space-4)',
@@ -291,6 +430,7 @@ const Navbar = () => {
         }
         @media (max-width: 640px) {
           .nav-hamburger { display: flex !important; }
+          .nav-lang-switcher { display: none !important; }
           .tb-social { display: none !important; }
         }
         @media (max-width: 480px) {
