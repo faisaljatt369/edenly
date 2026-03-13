@@ -64,15 +64,23 @@ const AuthLayout = ({ children, title, subtitle }) => {
         </p>
       </div>
 
-      {/* ── Right Form Panel — scrollable ── */}
+      {/* ── Right Form Panel — scrollable, vertically centred ── */}
       <div style={{
         flex: 1,
         height: '100vh',
         overflowY: 'auto',
         display: 'flex',
-        justifyContent: 'center',
-        padding: '48px 40px',
+        flexDirection: 'column',
       }}>
+        {/* Inner wrapper: centres content when short, grows when tall */}
+        <div style={{
+          flex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '48px 40px',
+          minHeight: 'min-content',
+        }}>
         <div style={{ width: '100%', maxWidth: 480 }}>
 
           {/* Mobile logo */}
@@ -98,9 +106,7 @@ const AuthLayout = ({ children, title, subtitle }) => {
           )}
 
           {children}
-
-          {/* Bottom breathing room so last field isn't flush against viewport edge */}
-          <div style={{ height: 48 }} />
+        </div>
         </div>
       </div>
 
