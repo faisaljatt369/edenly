@@ -11,24 +11,29 @@ const quote = quotes[Math.floor(Math.random() * quotes.length)];
 const AuthLayout = ({ children, title, subtitle }) => {
   return (
     <div style={{
-      minHeight: '100vh',
+      height: '100vh',
       display: 'flex',
+      overflow: 'hidden',           /* prevent outer scroll */
       background: 'var(--color-bg-app)',
       fontFamily: 'var(--font-sans)',
     }}>
-      {/* ── Left Brand Panel ── */}
-      <div style={{
-        width: '42%',
-        background: 'var(--gradient-brand)',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        padding: '48px 52px',
-        position: 'relative',
-        overflow: 'hidden',
-        flexShrink: 0,
-      }}
+
+      {/* ── Left Brand Panel — sticky, never scrolls ── */}
+      <div
         className="auth-brand-panel"
+        style={{
+          width: '42%',
+          flexShrink: 0,
+          position: 'sticky',
+          top: 0,
+          height: '100vh',
+          background: 'var(--gradient-brand)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          padding: '48px 52px',
+          overflow: 'hidden',
+        }}
       >
         {/* Decorative circles */}
         <div style={{ position:'absolute', top: -80, right: -80, width: 280, height: 280, borderRadius:'50%', background:'rgba(255,255,255,0.05)' }} />
@@ -59,23 +64,24 @@ const AuthLayout = ({ children, title, subtitle }) => {
         </p>
       </div>
 
-      {/* ── Right Form Panel ── */}
+      {/* ── Right Form Panel — scrollable ── */}
       <div style={{
         flex: 1,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '48px 32px',
+        height: '100vh',
         overflowY: 'auto',
+        display: 'flex',
+        justifyContent: 'center',
+        padding: '48px 40px',
       }}>
-        <div style={{ width: '100%', maxWidth: 420 }}>
+        <div style={{ width: '100%', maxWidth: 480 }}>
+
           {/* Mobile logo */}
           <div className="auth-mobile-logo" style={{ display: 'none', marginBottom: 'var(--space-8)' }}>
             <Logo size={36} />
           </div>
 
           {title && (
-            <div style={{ marginBottom: 'var(--space-8)' }}>
+            <div style={{ marginBottom: 'var(--space-6)' }}>
               <h1 style={{
                 fontSize: 'var(--font-size-2xl)', fontWeight: 700,
                 color: 'var(--color-text-primary)', letterSpacing: '-0.02em',
@@ -92,6 +98,9 @@ const AuthLayout = ({ children, title, subtitle }) => {
           )}
 
           {children}
+
+          {/* Bottom breathing room so last field isn't flush against viewport edge */}
+          <div style={{ height: 48 }} />
         </div>
       </div>
 
