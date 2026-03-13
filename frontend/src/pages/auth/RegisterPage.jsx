@@ -12,22 +12,22 @@ const RoleCard = ({ value, selected, onSelect, icon, title, desc }) => (
   <button
     type="button" onClick={() => onSelect(value)}
     style={{
-      flex: 1, padding: 'var(--space-5)', border: `2px solid`,
-      borderColor: selected ? 'var(--color-primary)' : 'var(--color-border)',
-      borderRadius: 'var(--radius-lg)',
-      background: selected ? 'rgba(2,65,57,0.04)' : 'var(--color-bg-card)',
-      cursor: 'pointer', textAlign: 'left',
-      transition: 'all var(--transition-base)',
+      flex: 1,
+      display: 'flex', alignItems: 'center', gap: 10,
+      padding: '10px 14px',
+      border: `1.5px solid ${selected ? 'var(--color-primary)' : 'var(--color-border)'}`,
+      borderRadius: 'var(--radius-md)',
+      background: selected ? 'rgba(2,65,57,0.05)' : 'var(--color-bg-card)',
+      cursor: 'pointer',
+      transition: 'all var(--transition-fast)',
+      boxShadow: selected ? '0 0 0 3px rgba(2,65,57,0.08)' : 'none',
     }}
   >
-    <div style={{ fontSize: 24, marginBottom: 8 }}>{icon}</div>
-    <p style={{ fontWeight: 700, color: 'var(--color-text-primary)', fontSize: 'var(--font-size-sm)', marginBottom: 4 }}>{title}</p>
-    <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>{desc}</p>
-    {selected && (
-      <div style={{ marginTop: 8 }}>
-        <span className="badge badge-primary" style={{ fontSize: '0.7rem' }}>Selected</span>
-      </div>
-    )}
+    <span style={{ fontSize: 18, lineHeight: 1 }}>{icon}</span>
+    <div style={{ textAlign: 'left' }}>
+      <p style={{ fontWeight: 600, color: selected ? 'var(--color-primary)' : 'var(--color-text-primary)', fontSize: 'var(--font-size-sm)', lineHeight: 1.2 }}>{title}</p>
+      <p style={{ fontSize: 11, color: 'var(--color-text-muted)', lineHeight: 1.4, marginTop: 2 }}>{desc}</p>
+    </div>
   </button>
 );
 
@@ -145,13 +145,13 @@ const RegisterPage = () => {
 
   return (
     <AuthLayout title="Create your account" subtitle="Join Edenly — it's free to get started.">
-      <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' }}>
+      <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
         {apiError && <Alert type="error" message={apiError} />}
 
         {/* Role selector */}
         <div>
-          <label className="form-label" style={{ display: 'block', marginBottom: 'var(--space-3)' }}>I want to…</label>
-          <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
+          <label className="form-label" style={{ display: 'block', marginBottom: 8 }}>I want to…</label>
+          <div style={{ display: 'flex', gap: 10 }}>
             <RoleCard value="customer" selected={form.role === 'customer'} onSelect={handleRoleChange}
               icon="👤" title="Book Services" desc="Discover and book top beauty & wellness providers." />
             <RoleCard value="provider" selected={form.role === 'provider'} onSelect={handleRoleChange}
@@ -193,13 +193,13 @@ const RegisterPage = () => {
 
         {/* GDPR Consent section */}
         <div style={{
-          display: 'flex', flexDirection: 'column', gap: 'var(--space-3)',
-          padding: 'var(--space-4)',
+          display: 'flex', flexDirection: 'column', gap: 10,
+          padding: '12px 14px',
           background: 'var(--color-bg-muted)',
           borderRadius: 'var(--radius-md)',
           border: '1px solid var(--color-border-light)',
         }}>
-          <p style={{ fontSize: 'var(--font-size-xs)', fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 'var(--space-1)' }}>
+          <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             Required agreements
           </p>
 
