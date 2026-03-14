@@ -172,32 +172,32 @@ const StarOutlineIcon = ({ size = 22 }) => (
   </svg>
 );
 
-/* App store brand icons */
-const AppleIcon = ({ size = 22 }) => (
-  <svg width={size} height={size} viewBox="0 0 814 1000" fill="currentColor">
-    <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105.3-57.8-155.5-127.4C46 389.1 31 301.4 31 213.7c0-141.9 92.6-217.1 182.6-217.1 66.4 0 121.6 43.8 162.7 43.8 39.5 0 101-46.3 174.6-46.3 27.5 0 127.3 2.6 204.4 96.3zm-155-135.3c-7.7 36.1-28.4 66.4-54.1 85.9-24.4 18.9-56.3 33.5-87.6 33.5-3.9 0-7.7-.3-11.6-.9 1.3-35.4 19.5-67.1 42.5-89.2 25.4-24.4 60.8-41.9 94.4-46.3.1 5.7 .2 11.4 .2 17.1h16.2z"/>
-  </svg>
-);
-const GooglePlayIcon = ({ size = 22 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M3.18 23.76a2 2 0 0 1-1.1-.54L13 12 2.08.78a2 2 0 0 1 1.1-.54l.21.06 12.35 7.12v.01l-1.43 1.43L3.39 23.7l-.21.06z"/>
-    <path d="M19.4 14.9l-2.7 1.56-2.96-2.96 2.97-2.97 2.7 1.56a2 2 0 0 1 0 3.81z"/>
-    <path d="M3.39.3L14.31 8.85 12.88 10.28.3.54A2 2 0 0 1 3.39.3z"/>
-    <path d="M.08 23.22L12.88 13.72l1.43 1.43L3.39 23.7a2 2 0 0 1-3.31-.48z"/>
-  </svg>
-);
 
 /* ─────────────────────────────────────────────────────────────────
    HERO SECTION
 ───────────────────────────────────────────────────────────────── */
 const Hero = () => {
-  const [location, setLocation] = useState('');
-  const [service,  setService]  = useState('');
+  const [location,     setLocation]     = useState('');
+  const [service,      setService]      = useState('');
+  const [activeTag,    setActiveTag]    = useState(null);   // which pill is selected
+  const [focusedInput, setFocusedInput] = useState(null);   // 'location' | 'service' | null
+  const [barFocused,   setBarFocused]   = useState(false);  // any input inside bar focused
   const navigate = useNavigate();
 
   const handleSearch = (e) => {
     e.preventDefault();
     navigate(`/providers?service=${encodeURIComponent(service)}&location=${encodeURIComponent(location)}`);
+  };
+
+  const selectTag = (tag) => {
+    setService(tag);
+    setActiveTag(tag);
+  };
+
+  // Deselect tag if user manually edits the service input
+  const handleServiceChange = (val) => {
+    setService(val);
+    if (activeTag && val !== activeTag) setActiveTag(null);
   };
 
   return (
@@ -275,78 +275,88 @@ const Hero = () => {
           </p>
 
           {/* Search bar */}
-          <form onSubmit={handleSearch} style={{ display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 560 }}>
-            <div style={{
-              display: 'flex',
-              background: '#fff',
-              border: '1.5px solid var(--color-border)',
-              borderRadius: 'var(--radius-xl)',
-              overflow: 'hidden',
-              boxShadow: '0 4px 20px rgba(2,65,57,0.08)',
-              transition: 'box-shadow 0.2s, border-color 0.2s',
-            }}
-              onFocusCapture={(e) => {
-                e.currentTarget.style.boxShadow = '0 4px 24px rgba(2,65,57,0.14)';
-                e.currentTarget.style.borderColor = 'var(--color-primary)';
-              }}
-              onBlurCapture={(e) => {
-                e.currentTarget.style.boxShadow = '0 4px 20px rgba(2,65,57,0.08)';
-                e.currentTarget.style.borderColor = 'var(--color-border)';
+          <form onSubmit={handleSearch} style={{ display: 'flex', flexDirection: 'column', gap: 14, maxWidth: 580 }}>
+            <div
+              className="search-bar"
+              style={{
+                display: 'flex',
+                background: '#fff',
+                border: `1.5px solid ${barFocused ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                borderRadius: 'var(--radius-xl)',
+                overflow: 'hidden',
+                boxShadow: barFocused
+                  ? '0 4px 28px rgba(2,65,57,0.16), 0 0 0 3px rgba(2,65,57,0.07)'
+                  : '0 4px 20px rgba(2,65,57,0.07)',
+                transition: 'border-color 0.18s, box-shadow 0.18s',
               }}
             >
-              {/* Location input */}
-              <div style={{ display: 'flex', alignItems: 'center', flex: 1, padding: '0 18px', gap: 10, minWidth: 0 }}>
-                <span style={{ color: 'var(--color-text-muted)', flexShrink: 0 }}><MapPinIcon /></span>
+              {/* Location section */}
+              <div
+                style={{
+                  display: 'flex', alignItems: 'center', flex: 1,
+                  padding: '0 16px', gap: 10, minWidth: 0,
+                  background: focusedInput === 'location' ? 'rgba(2,65,57,0.03)' : 'transparent',
+                  transition: 'background 0.15s',
+                }}
+              >
+                <span style={{ color: focusedInput === 'location' ? 'var(--color-primary)' : 'var(--color-text-muted)', flexShrink: 0, transition: 'color 0.15s' }}>
+                  <MapPinIcon />
+                </span>
                 <input
+                  className="search-input"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
+                  onFocus={() => { setFocusedInput('location'); setBarFocused(true); }}
+                  onBlur={() => { setFocusedInput(null); setBarFocused(false); }}
                   placeholder="Stadt oder PLZ"
-                  style={{
-                    flex: 1, border: 'none', outline: 'none',
-                    fontSize: 15, color: 'var(--color-text-primary)',
-                    background: 'transparent', minWidth: 0,
-                    padding: '16px 0',
-                  }}
+                  autoComplete="off"
                 />
               </div>
 
               {/* Divider */}
-              <div style={{ width: 1, background: 'var(--color-border)', margin: '12px 0', flexShrink: 0 }} />
+              <div style={{ width: 1, background: 'var(--color-border)', margin: '14px 0', flexShrink: 0, opacity: barFocused ? 0.5 : 1, transition: 'opacity 0.18s' }} />
 
-              {/* Service input */}
-              <div style={{ display: 'flex', alignItems: 'center', flex: 1, padding: '0 18px', gap: 10, minWidth: 0 }}>
-                <span style={{ color: 'var(--color-text-muted)', flexShrink: 0 }}><SearchIcon /></span>
+              {/* Service section */}
+              <div
+                style={{
+                  display: 'flex', alignItems: 'center', flex: 1,
+                  padding: '0 16px', gap: 10, minWidth: 0,
+                  background: focusedInput === 'service' ? 'rgba(2,65,57,0.03)' : 'transparent',
+                  transition: 'background 0.15s',
+                }}
+              >
+                <span style={{ color: focusedInput === 'service' ? 'var(--color-primary)' : 'var(--color-text-muted)', flexShrink: 0, transition: 'color 0.15s' }}>
+                  <SearchIcon />
+                </span>
                 <input
+                  className="search-input"
                   value={service}
-                  onChange={(e) => setService(e.target.value)}
+                  onChange={(e) => handleServiceChange(e.target.value)}
+                  onFocus={() => { setFocusedInput('service'); setBarFocused(true); }}
+                  onBlur={() => { setFocusedInput(null); setBarFocused(false); }}
                   placeholder="Service, z.B. Braids"
-                  style={{
-                    flex: 1, border: 'none', outline: 'none',
-                    fontSize: 15, color: 'var(--color-text-primary)',
-                    background: 'transparent', minWidth: 0,
-                    padding: '16px 0',
-                  }}
+                  autoComplete="off"
                 />
               </div>
 
               {/* Search CTA */}
-              <button type="submit" style={{
-                background: 'var(--color-primary)',
-                color: '#fff',
-                border: 'none',
-                borderRadius: 'var(--radius-xl)',
-                margin: 5,
-                padding: '0 28px',
-                fontSize: 15,
-                fontWeight: 600,
-                cursor: 'pointer',
-                display: 'flex', alignItems: 'center', gap: 8,
-                whiteSpace: 'nowrap',
-                flexShrink: 0,
-                transition: 'background 0.18s',
-              }}
+              <button
+                type="submit"
+                className="search-btn"
+                style={{
+                  background: 'var(--color-primary)', color: '#fff',
+                  border: 'none', borderRadius: 'var(--radius-xl)',
+                  margin: 5, padding: '0 26px',
+                  fontSize: 15, fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  whiteSpace: 'nowrap', flexShrink: 0,
+                  transition: 'background 0.18s, transform 0.12s',
+                }}
                 onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-primary-hover)'}
                 onMouseLeave={(e) => e.currentTarget.style.background = 'var(--color-primary)'}
+                onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.97)'}
+                onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
               >
                 <SearchIcon /> Suchen
               </button>
@@ -354,33 +364,36 @@ const Hero = () => {
 
             {/* Popular tags */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 12.5, color: 'var(--color-text-muted)', fontWeight: 500 }}>Beliebt:</span>
-              {POPULAR_TAGS.map((tag) => (
-                <button
-                  key={tag}
-                  type="button"
-                  onClick={() => { setService(tag); }}
-                  style={{
-                    fontSize: 12.5, color: 'var(--color-text-secondary)',
-                    background: 'var(--color-bg-muted)',
-                    border: '1px solid var(--color-border)',
-                    borderRadius: 'var(--radius-full)',
-                    padding: '4px 12px',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(2,65,57,0.07)';
-                    e.currentTarget.style.borderColor = 'var(--color-primary)';
-                    e.currentTarget.style.color = 'var(--color-primary)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'var(--color-bg-muted)';
-                    e.currentTarget.style.borderColor = 'var(--color-border)';
-                    e.currentTarget.style.color = 'var(--color-text-secondary)';
-                  }}
-                >{tag}</button>
-              ))}
+              <span style={{ fontSize: 12.5, color: 'var(--color-text-muted)', fontWeight: 500, flexShrink: 0 }}>Beliebt:</span>
+              {POPULAR_TAGS.map((tag) => {
+                const isActive = activeTag === tag;
+                return (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => selectTag(isActive ? null : tag)}
+                    style={{
+                      fontSize: 12.5,
+                      fontWeight: isActive ? 600 : 400,
+                      color: isActive ? 'var(--color-primary)' : 'var(--color-text-secondary)',
+                      background: isActive ? 'rgba(2,65,57,0.08)' : 'var(--color-bg-muted)',
+                      border: `1.5px solid ${isActive ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                      borderRadius: 'var(--radius-full)',
+                      padding: '5px 13px',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s',
+                      display: 'flex', alignItems: 'center', gap: 5,
+                    }}
+                  >
+                    {isActive && (
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                    )}
+                    {tag}
+                  </button>
+                );
+              })}
             </div>
           </form>
         </div>
@@ -467,6 +480,34 @@ const Hero = () => {
         @media (max-width: 960px) {
           .hero-grid { grid-template-columns: 1fr !important; gap: 0 !important; }
           .hero-image-col { display: none !important; }
+        }
+        /* Remove ALL browser-native focus rings from search inputs */
+        .search-input {
+          flex: 1; border: none; outline: none !important;
+          box-shadow: none !important;
+          font-size: 15px; font-family: inherit;
+          color: var(--color-text-primary);
+          background: transparent; min-width: 0;
+          padding: 17px 0;
+          -webkit-appearance: none;
+          appearance: none;
+        }
+        .search-input:focus,
+        .search-input:focus-visible {
+          outline: none !important;
+          box-shadow: none !important;
+        }
+        .search-input:-webkit-autofill,
+        .search-input:-webkit-autofill:hover,
+        .search-input:-webkit-autofill:focus {
+          -webkit-box-shadow: 0 0 0 1000px #fff inset !important;
+          -webkit-text-fill-color: var(--color-text-primary) !important;
+          transition: background-color 5000s ease-in-out 0s;
+        }
+        .search-input::placeholder { color: var(--color-text-muted); }
+        .search-btn:focus-visible {
+          outline: 2px solid var(--color-secondary);
+          outline-offset: 2px;
         }
       `}</style>
     </section>
@@ -1037,100 +1078,6 @@ const ProviderCTA = () => (
 );
 
 /* ─────────────────────────────────────────────────────────────────
-   APP DOWNLOAD TEASER
-───────────────────────────────────────────────────────────────── */
-const AppTeaser = () => (
-  <section style={{ background: '#ffffff', padding: '72px 0' }}>
-    <div style={{
-      maxWidth: 1440, margin: '0 auto', padding: '0 var(--space-6)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      flexDirection: 'column', textAlign: 'center',
-    }}>
-      <p style={{
-        fontSize: 12, fontWeight: 700, letterSpacing: '0.1em',
-        textTransform: 'uppercase', color: 'var(--color-secondary)', marginBottom: 8,
-      }}>Coming Soon</p>
-      <h2 style={{
-        fontSize: 'clamp(1.6rem, 3vw, 2.2rem)',
-        fontWeight: 700, letterSpacing: '-0.02em',
-        color: 'var(--color-text-primary)', margin: '0 0 14px',
-      }}>
-        Edenly App — bald verfügbar
-      </h2>
-      <p style={{
-        fontSize: 15, color: 'var(--color-text-secondary)',
-        maxWidth: 460, lineHeight: 1.65, marginBottom: 32,
-      }}>
-        Buche Termine, verwalte dein Profil und entdecke neue Trends —
-        alles direkt in deiner Tasche.
-      </p>
-
-      {/* Email capture */}
-      <form onSubmit={(e) => e.preventDefault()} style={{
-        display: 'flex', gap: 10, width: '100%', maxWidth: 420,
-      }} className="app-form">
-        <input
-          type="email"
-          placeholder="Deine E-Mail Adresse"
-          style={{
-            flex: 1, padding: '12px 18px',
-            border: '1.5px solid var(--color-border)',
-            borderRadius: 'var(--radius-full)',
-            fontSize: 14, outline: 'none',
-            background: 'var(--color-bg-app)',
-            color: 'var(--color-text-primary)',
-          }}
-        />
-        <button type="submit" style={{
-          background: 'var(--color-primary)', color: '#fff',
-          border: 'none', borderRadius: 'var(--radius-full)',
-          padding: '12px 22px', fontSize: 14, fontWeight: 600,
-          cursor: 'pointer', whiteSpace: 'nowrap',
-          flexShrink: 0,
-          transition: 'background 0.18s',
-        }}
-          onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-primary-hover)'}
-          onMouseLeave={(e) => e.currentTarget.style.background = 'var(--color-primary)'}
-        >
-          Benachrichtigen
-        </button>
-      </form>
-
-      {/* Store badges placeholder */}
-      <div style={{ display: 'flex', gap: 12, marginTop: 28, flexWrap: 'wrap', justifyContent: 'center' }}>
-        <div style={{
-          background: 'var(--color-text-primary)', color: '#fff',
-          borderRadius: 'var(--radius-md)', padding: '10px 22px',
-          display: 'flex', alignItems: 'center', gap: 12, cursor: 'not-allowed',
-          opacity: 0.6, minWidth: 160,
-        }}>
-          <AppleIcon size={24} />
-          <div style={{ textAlign: 'left' }}>
-            <p style={{ fontSize: 10, opacity: 0.65, margin: 0, letterSpacing: '0.02em' }}>Bald auf dem</p>
-            <p style={{ fontSize: 15, fontWeight: 700, margin: 0 }}>App Store</p>
-          </div>
-        </div>
-        <div style={{
-          background: 'var(--color-text-primary)', color: '#fff',
-          borderRadius: 'var(--radius-md)', padding: '10px 22px',
-          display: 'flex', alignItems: 'center', gap: 12, cursor: 'not-allowed',
-          opacity: 0.6, minWidth: 160,
-        }}>
-          <GooglePlayIcon size={22} />
-          <div style={{ textAlign: 'left' }}>
-            <p style={{ fontSize: 10, opacity: 0.65, margin: 0, letterSpacing: '0.02em' }}>Bald auf dem</p>
-            <p style={{ fontSize: 15, fontWeight: 700, margin: 0 }}>Google Play</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <style>{`
-      @media (max-width: 480px) { .app-form { flex-direction: column !important; } }
-    `}</style>
-  </section>
-);
-
-/* ─────────────────────────────────────────────────────────────────
    PAGE ASSEMBLY
 ───────────────────────────────────────────────────────────────── */
 const HomePage = () => (
@@ -1141,7 +1088,6 @@ const HomePage = () => (
     <FeaturedSection />
     <StatsStrip />
     <ProviderCTA />
-    <AppTeaser />
   </AppLayout>
 );
 
