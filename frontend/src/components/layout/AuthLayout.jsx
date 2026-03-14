@@ -91,10 +91,11 @@ const AuthLayout = ({ title, subtitle, children }) => (
     {/* ── Right form panel ─────────────────────────────────────────── */}
     <div style={{
       flex: 1,
+      minHeight: '100vh',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '32px 16px',
+      padding: '48px 16px',
       overflowY: 'auto',
     }}>
       <div style={{
