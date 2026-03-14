@@ -6,20 +6,20 @@ import { useAuth } from '../../hooks/useAuth';
    Theme tokens — dark slate sidebar
 ───────────────────────────────────────────────────────────────────────────── */
 const S = {
-  bg:           '#0F172A',
-  bgHover:      'rgba(255,255,255,0.06)',
-  bgActive:     'rgba(73,169,108,0.18)',
+  bg:           '#0A2E28',          /* deep brand forest green — not white, not primary #024139 */
+  bgHover:      'rgba(255,255,255,0.07)',
+  bgActive:     'rgba(73,169,108,0.22)',
   border:       'rgba(255,255,255,0.07)',
-  divider:      'rgba(255,255,255,0.08)',
-  textMuted:    '#64748B',
-  textNormal:   '#94A3B8',
+  divider:      'rgba(255,255,255,0.09)',
+  textMuted:    '#5E8C82',
+  textNormal:   '#8FB8B2',
   textActive:   '#ffffff',
-  sectionLabel: '#475569',
-  iconMuted:    '#4B5563',
+  sectionLabel: '#3D6E67',
+  iconMuted:    '#3D6E67',
   iconActive:   '#49A96C',
-  cardBg:       'rgba(255,255,255,0.05)',
-  cardBorder:   'rgba(255,255,255,0.09)',
-  nameColor:    '#E2E8F0',
+  cardBg:       'rgba(255,255,255,0.06)',
+  cardBorder:   'rgba(255,255,255,0.10)',
+  nameColor:    '#D4EDE9',
   roleColor:    '#49A96C',
 };
 
@@ -290,7 +290,7 @@ export default function DashboardLayout({ navItems = [], pageTitle, pageTitleMap
           borderRight: `1px solid ${S.border}`,
           position: 'sticky', top: 0, height: '100vh',
           overflowY: 'auto', overflowX: 'hidden',
-          boxShadow: '4px 0 24px rgba(0,0,0,0.25)',
+          boxShadow: '4px 0 24px rgba(2,65,57,0.35)',
         }}
       >
         {sidebarContent}
