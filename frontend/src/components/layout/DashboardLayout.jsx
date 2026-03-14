@@ -329,6 +329,24 @@ export default function DashboardLayout({ navItems = [], pageTitle, pageTitleMap
       {/* ── Main area ── */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
 
+        {/* ── Floating mobile menu button (shown only on mobile, outside topbar) ── */}
+        <button
+          className="db-fab-menu"
+          onClick={() => setMobileOpen(true)}
+          style={{
+            display: 'none',
+            position: 'fixed', top: 14, left: 14, zIndex: 120,
+            width: 40, height: 40, borderRadius: 11,
+            background: S.bg,
+            border: 'none', cursor: 'pointer',
+            alignItems: 'center', justifyContent: 'center',
+            color: '#fff',
+            boxShadow: '0 2px 12px rgba(2,65,57,0.35)',
+          }}
+        >
+          <Icons.menu />
+        </button>
+
         {/* ── Top bar ── */}
         <div className="db-topbar" style={{
           height: 60, background: '#fff',
@@ -339,13 +357,8 @@ export default function DashboardLayout({ navItems = [], pageTitle, pageTitleMap
           boxShadow: '0 1px 4px rgba(15,23,42,0.05)',
           flexShrink: 0,
         }}>
-          {/* Mobile menu */}
-          <button className="db-menu-btn" onClick={() => setMobileOpen(true)} style={{
-            background: 'none', border: 'none', cursor: 'pointer',
-            color: '#64748B', display: 'none', padding: 4, borderRadius: 8,
-          }}>
-            <Icons.menu />
-          </button>
+          {/* placeholder — real mobile trigger is the FAB above */}
+          <span style={{ display: 'none' }} />
 
           {/* Logo */}
           <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', flexShrink: 0, textDecoration: 'none' }}>
@@ -410,12 +423,10 @@ export default function DashboardLayout({ navItems = [], pageTitle, pageTitleMap
       <style>{`
         /* ── Sidebar / topbar ── */
         @media (max-width: 768px) {
-          .db-sidebar  { display: none !important; }
-          .db-menu-btn { display: flex !important; }
-          .db-topbar   { padding: 0 14px !important; gap: 10px !important; }
-          .db-logo-div { display: none !important; }
-          .db-page-title { font-size: 14px !important; }
-          .db-main     { padding: 16px !important; }
+          .db-sidebar   { display: none !important; }
+          .db-topbar    { display: none !important; }
+          .db-fab-menu  { display: flex !important; }
+          .db-main      { padding: 60px 16px 24px !important; }
         }
         nav::-webkit-scrollbar { display: none; }
 
