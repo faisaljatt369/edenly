@@ -18,8 +18,8 @@ import ProviderOnboardingPage from './pages/onboarding/ProviderOnboardingPage';
 import NotFoundPage     from './pages/errors/NotFoundPage';
 import UnauthorizedPage from './pages/errors/UnauthorizedPage';
 
-// Dashboard (Phase 1 placeholder)
-import DashboardPage from './pages/DashboardPage';
+// Dashboard
+import DashboardPage from './pages/dashboard/DashboardPage';
 
 // Contact & Legal
 import ContactPage      from './pages/ContactPage';
@@ -46,7 +46,7 @@ function App() {
       <Route path="/verify-email"    element={<VerifyEmailPage />} />
 
       {/* ── Protected routes ── */}
-      <Route path="/dashboard" element={
+      <Route path="/dashboard/*" element={
         <ProtectedRoute><DashboardPage /></ProtectedRoute>
       } />
       <Route path="/onboarding" element={
