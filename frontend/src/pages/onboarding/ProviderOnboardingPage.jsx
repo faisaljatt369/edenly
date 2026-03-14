@@ -49,24 +49,20 @@ const BUFFER_OPTIONS = [
   { label: '60 min', value: 60 },
 ];
 const STEPS = [
-  { id: 1,  label: 'Location'      },
-  { id: 2,  label: 'Social Media'  },
-  { id: 3,  label: 'Categories'    },
-  { id: 4,  label: 'Services'      },
-  { id: 5,  label: 'Availability'  },
-  { id: 6,  label: 'Blocked Times' },
-  { id: 7,  label: 'Policies'      },
-  { id: 8,  label: 'Payments'      },
-  { id: 9,  label: 'About'         },
-  { id: 10, label: 'Review'        },
+  { id: 1, label: 'Location'     },
+  { id: 2, label: 'Social Media' },
+  { id: 3, label: 'Services'     },
+  { id: 4, label: 'Availability' },
+  { id: 5, label: 'Policies'     },
+  { id: 6, label: 'Payments'     },
+  { id: 7, label: 'About'        },
+  { id: 8, label: 'Review'       },
 ];
 const STEP_DESCRIPTIONS = [
   'Where are you based? This helps customers find you.',
   'Add your social media so customers can see your work.',
-  'Select all beauty categories that apply to your services.',
   'Add the services you offer. You can always update these later.',
   'Set your working days, hours and buffer time between appointments.',
-  'Block dates when you are unavailable — vacations, breaks, etc.',
   'Define your cancellation and deposit policies.',
   'Connect Stripe to receive payouts from your bookings.',
   'Write a short bio to introduce yourself to customers.',
@@ -270,118 +266,31 @@ const StepSocial = ({ data, onSave, onBack }) => {
   );
 };
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   Step 3 – Categories
-───────────────────────────────────────────────────────────────────────────── */
-const CATEGORY_ICONS = {
-  'hair': (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="20" height="20"><path d="M6 4a6 6 0 0 1 6 6v10M12 10a6 6 0 0 1 6-6"/><path d="M9 20h6"/></svg>),
-  'braids': (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="20" height="20"><path d="M12 2v20M7 6c0 0 2 2 5 2s5-2 5-2M7 12c0 0 2 2 5 2s5-2 5-2M7 18c0 0 2 2 5 2s5-2 5-2"/></svg>),
-  'nails': (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="20" height="20"><rect x="8" y="2" width="4" height="10" rx="2"/><rect x="4" y="14" width="16" height="6" rx="2"/></svg>),
-  'lashes': (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="20" height="20"><path d="M2 12c0 0 4-5 10-5s10 5 10 5"/><circle cx="12" cy="12" r="3"/><path d="M8 5l-1-2M12 4V2M16 5l1-2"/></svg>),
-  'brows': (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="20" height="20"><path d="M2 10c1-3 4-5 8-5s7 2 8 5"/><path d="M6 13c1-2 3-3 6-3s5 1 6 3"/></svg>),
-  'makeup': (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="20" height="20"><path d="M12 2c0 0-6 5-6 11a6 6 0 0 0 12 0c0-6-6-11-6-11z"/><path d="M12 13v5"/></svg>),
-  'tooth-gems': (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="20" height="20"><path d="M12 2L9 9H2l5.5 4-2 7L12 16l6.5 4-2-7L22 9h-7z"/></svg>),
-  'laser-hair-removal': (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="20" height="20"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>),
-};
-
-const StepCategories = ({ data, onSave, onBack }) => {
-  const [allCats, setAllCats]   = useState([]);
-  const [selected, setSelected] = useState(new Set(data.categories || []));
-  const [loading, setLoading]   = useState(false);
-  const [saving, setSaving]     = useState(false);
-  const [error, setError]       = useState('');
-
-  useEffect(() => {
-    setLoading(true);
-    api.get('/categories')
-      .then(({ data: d }) => setAllCats(d.categories || []))
-      .catch(() => setError('Failed to load categories'))
-      .finally(() => setLoading(false));
-  }, []);
-
-  const toggle = (id) => {
-    setSelected((p) => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
-    setError('');
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!selected.size) { setError('Please select at least one category'); return; }
-    setSaving(true);
-    try {
-      await api.put('/providers/onboarding/categories', { category_ids: [...selected] });
-      onSave({ categories: [...selected] });
-    } catch (err) {
-      setError(err.response?.data?.message || 'Failed to save.');
-    } finally { setSaving(false); }
-  };
-
-  return (
-    <form onSubmit={handleSubmit} noValidate>
-      {error && <Alert type="error" message={error} style={{ marginBottom: 16 }} />}
-      {loading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}>
-          <LoadingSpinner size={32} />
-        </div>
-      ) : (
-        <>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 16 }}>
-            {allCats.map((cat) => {
-              const active = selected.has(cat.id);
-              return (
-                <button key={cat.id} type="button" onClick={() => toggle(cat.id)} style={{
-                  display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px',
-                  border: `2px solid ${active ? 'var(--color-primary)' : 'var(--color-border)'}`,
-                  borderRadius: 'var(--radius-lg)',
-                  background: active ? 'rgba(2,65,57,0.05)' : 'var(--color-bg-card)',
-                  cursor: 'pointer', textAlign: 'left',
-                  transition: 'all var(--transition-fast)',
-                  boxShadow: active ? '0 0 0 3px rgba(2,65,57,0.06)' : 'none',
-                }}>
-                  <span style={{ color: active ? 'var(--color-primary)' : 'var(--color-text-muted)', display: 'flex', flexShrink: 0 }}>
-                    {CATEGORY_ICONS[cat.slug] || <PlusIcon />}
-                  </span>
-                  <span style={{ fontWeight: 600, fontSize: 13, color: active ? 'var(--color-primary)' : 'var(--color-text-primary)', flex: 1 }}>
-                    {cat.name}
-                  </span>
-                  {active && (
-                    <span style={{ color: 'var(--color-primary)', display: 'flex', flexShrink: 0 }}>
-                      <CheckIcon size={16} />
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-          <p style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>
-            {selected.size} {selected.size === 1 ? 'category' : 'categories'} selected
-          </p>
-        </>
-      )}
-      <StepNav onBack={onBack} loading={saving} />
-    </form>
-  );
-};
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   Step 4 – Services
+   Step 3 – Services
 ───────────────────────────────────────────────────────────────────────────── */
 const emptyService = () => ({
   _key: `${Date.now()}-${Math.random()}`,
-  name: '', category_id: '', price: '', duration: '',
-  description: '', is_custom: false, variants: [],
-});
-const emptyVariant = () => ({
-  _key: `${Date.now()}-${Math.random()}`,
-  name: '', price: '', duration: '',
+  name: '', category_id: '', price: '', duration: '', description: '', is_custom: false,
 });
 
-const ServiceCard = ({ svc, allCats, onChange, onRemove, errors = {} }) => {
-  const [open, setOpen] = useState(true);
+/* Section heading inside service card */
+const SectionHeading = ({ children }) => (
+  <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 20, letterSpacing: '-0.01em' }}>
+    {children}
+  </p>
+);
+
+/* Char counter badge */
+const CharCount = ({ current, max }) => (
+  <span style={{ fontSize: 11, color: current >= max ? 'var(--color-error)' : 'var(--color-text-muted)', fontVariantNumeric: 'tabular-nums' }}>
+    {current}/{max}
+  </span>
+);
+
+const ServiceCard = ({ svc, index, allCats, onChange, onRemove, errors = {} }) => {
   const set = (k) => (e) => onChange({ ...svc, [k]: e.target.value });
-  const addVariant    = () => onChange({ ...svc, variants: [...svc.variants, emptyVariant()] });
-  const removeVariant = (i) => onChange({ ...svc, variants: svc.variants.filter((_, j) => j !== i) });
-  const setVariant = (i, k) => (e) => onChange({ ...svc, variants: svc.variants.map((v, j) => j === i ? { ...v, [k]: e.target.value } : v) });
 
   return (
     <div style={{
@@ -389,25 +298,17 @@ const ServiceCard = ({ svc, allCats, onChange, onRemove, errors = {} }) => {
       borderRadius: 'var(--radius-xl)',
       background: 'var(--color-bg-card)',
       overflow: 'hidden',
-      boxShadow: 'var(--shadow-xs)',
       transition: 'border-color var(--transition-fast)',
     }}>
-      {/* Header */}
-      <div
-        onClick={() => setOpen((p) => !p)}
-        style={{
-          display: 'flex', alignItems: 'center', gap: 10,
-          padding: '13px 18px',
-          background: 'var(--color-bg-muted)',
-          cursor: 'pointer',
-          borderBottom: open ? '1px solid var(--color-border-light)' : 'none',
-        }}
-      >
-        <span style={{ color: 'var(--color-text-muted)', display: 'flex', transition: 'transform var(--transition-fast)', transform: open ? 'rotate(0deg)' : 'rotate(-90deg)' }}>
-          <ChevronIcon open={open} />
-        </span>
-        <span style={{ fontWeight: 600, fontSize: 13, color: 'var(--color-text-primary)', flex: 1 }}>
-          {svc.name || 'New Service'}
+      {/* Card header */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 10,
+        padding: '14px 24px',
+        background: 'var(--color-bg-muted)',
+        borderBottom: '1px solid var(--color-border-light)',
+      }}>
+        <span style={{ fontWeight: 600, fontSize: 14, color: 'var(--color-text-primary)', flex: 1 }}>
+          {svc.name.trim() || `Service ${index + 1}`}
         </span>
         {svc.is_custom && (
           <span style={{
@@ -419,11 +320,10 @@ const ServiceCard = ({ svc, allCats, onChange, onRemove, errors = {} }) => {
           </span>
         )}
         <button
-          type="button"
-          onClick={(e) => { e.stopPropagation(); onRemove(); }}
+          type="button" onClick={onRemove}
           style={{
             color: 'var(--color-text-muted)', background: 'none', border: 'none',
-            cursor: 'pointer', display: 'flex', padding: 4, borderRadius: 6,
+            cursor: 'pointer', display: 'flex', padding: '4px 6px', borderRadius: 6,
             transition: 'color var(--transition-fast)',
           }}
           onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-error)'}
@@ -433,108 +333,80 @@ const ServiceCard = ({ svc, allCats, onChange, onRemove, errors = {} }) => {
         </button>
       </div>
 
-      {open && (
-        <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {/* Name + Category */}
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 14 }}>
-            <Field label="Service Name" required error={errors.name}>
-              <Input value={svc.name} onChange={set('name')} placeholder="e.g. Box Braids" error={errors.name} />
-            </Field>
-            <Field label="Category">
-              <Select value={svc.category_id} onChange={set('category_id')}>
-                <option value="">— Select —</option>
-                {allCats.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-              </Select>
-            </Field>
-          </div>
+      {/* ── Basic details ── */}
+      <div style={{ padding: '24px 24px 20px' }}>
+        <SectionHeading>Basic details</SectionHeading>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
 
-          {/* Price + Duration (only if no variants) */}
-          {!svc.variants.length && (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-              <Field label="Price (€)" hint="Leave blank if price varies by variant">
-                <Input type="number" min="0" step="0.01" value={svc.price} onChange={set('price')} placeholder="e.g. 80" />
-              </Field>
-              <Field label="Duration (min)" hint="Estimated appointment length">
-                <Input type="number" min="0" step="5" value={svc.duration} onChange={set('duration')} placeholder="e.g. 180" />
-              </Field>
+          {/* Service name — full width + char counter */}
+          <Field label="Service name" required error={errors.name}>
+            <div style={{ position: 'relative' }}>
+              <Input
+                value={svc.name} onChange={set('name')} maxLength={255}
+                placeholder="e.g. Box Braids, Lash Lift, Skin Glow Facial"
+                error={errors.name}
+              />
+              <span style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
+                <CharCount current={svc.name.length} max={255} />
+              </span>
             </div>
-          )}
-
-          {/* Description */}
-          <Field label="Description" hint="Optional — briefly describe this service">
-            <Textarea value={svc.description} onChange={set('description')} rows={2} placeholder="Short description…" />
           </Field>
 
-          {/* Variants */}
-          {svc.variants.length > 0 && (
-            <div>
-              <p style={{
-                fontSize: 11, fontWeight: 700, letterSpacing: '0.07em',
-                textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: 10,
-              }}>
-                Variants
-              </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {svc.variants.map((v, i) => (
-                  <div key={v._key || i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr auto', gap: 10, alignItems: 'end' }}>
-                    <Field label={i === 0 ? 'Name' : undefined}>
-                      <Input value={v.name} onChange={setVariant(i, 'name')} placeholder="e.g. Short" />
-                    </Field>
-                    <Field label={i === 0 ? 'Price (€)' : undefined}>
-                      <Input type="number" min="0" value={v.price} onChange={setVariant(i, 'price')} placeholder="0" />
-                    </Field>
-                    <Field label={i === 0 ? 'Duration (min)' : undefined}>
-                      <Input type="number" min="0" value={v.duration} onChange={setVariant(i, 'duration')} placeholder="60" />
-                    </Field>
-                    <button type="button" onClick={() => removeVariant(i)} style={{
-                      color: 'var(--color-text-muted)', background: 'none', border: 'none',
-                      cursor: 'pointer', display: 'flex', paddingBottom: i === 0 ? 10 : 0,
-                      transition: 'color var(--transition-fast)',
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-error)'}
-                    onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-text-muted)'}>
-                      <TrashIcon size={14} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          {/* Category — full width */}
+          <Field label="Category" hint="The category shown to customers online">
+            <Select value={svc.category_id} onChange={set('category_id')}>
+              <option value="">— Select a category —</option>
+              {allCats.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </Select>
+          </Field>
 
-          {/* Add Variant */}
-          <button type="button" onClick={addVariant} style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6,
-            fontSize: 12, fontWeight: 600, color: 'var(--color-primary)',
-            background: 'rgba(2,65,57,0.05)',
-            border: '1.5px dashed rgba(2,65,57,0.25)',
-            borderRadius: 'var(--radius-md)', padding: '7px 14px',
-            cursor: 'pointer', alignSelf: 'start',
-            transition: 'background var(--transition-fast)',
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(2,65,57,0.1)'}
-          onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(2,65,57,0.05)'}>
-            <PlusIcon size={12} /> Add Variant
-          </button>
+          {/* Description — full width + char counter */}
+          <Field label="Description" hint="Optional — briefly describe this service">
+            <div style={{ position: 'relative' }}>
+              <Textarea
+                value={svc.description} onChange={set('description')}
+                maxLength={500} rows={3}
+                placeholder="Add a short description…"
+              />
+              <span style={{ position: 'absolute', right: 12, bottom: 10, pointerEvents: 'none' }}>
+                <CharCount current={svc.description.length} max={500} />
+              </span>
+            </div>
+          </Field>
         </div>
-      )}
+      </div>
+
+      {/* Divider */}
+      <div style={{ height: 1, background: 'var(--color-border-light)' }} />
+
+      {/* ── Pricing & duration ── */}
+      <div style={{ padding: '20px 24px 24px' }}>
+        <SectionHeading>Pricing &amp; duration</SectionHeading>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <Field label="Price (€)" hint="Leave blank if price varies">
+            <div style={{ position: 'relative' }}>
+              <span style={{ position: 'absolute', left: 13, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)', fontSize: 14, pointerEvents: 'none' }}>€</span>
+              <Input type="number" min="0" step="0.01" value={svc.price} onChange={set('price')} placeholder="0.00" style={{ paddingLeft: 28 }} />
+            </div>
+          </Field>
+          <Field label="Duration (min)" hint="Estimated appointment length">
+            <Input type="number" min="0" step="5" value={svc.duration} onChange={set('duration')} placeholder="e.g. 60" />
+          </Field>
+        </div>
+      </div>
     </div>
   );
 };
 
-const StepServices = ({ data, onSave, onBack }) => {
-  const [allCats, setAllCats]   = useState([]);
+const StepServices = ({ data, onSave, onBack, allCats = [] }) => {
   const [services, setServices] = useState(
     (data.services || []).length
-      ? data.services.map((s) => ({ ...s, _key: s.id || `${Date.now()}-${Math.random()}`, variants: s.variants || [] }))
+      ? data.services.map((s) => ({ ...s, _key: s.id || `${Date.now()}-${Math.random()}` }))
       : [emptyService()]
   );
   const [fieldErrors, setFieldErrors] = useState({});
   const [saving, setSaving]           = useState(false);
   const [apiError, setApiError]       = useState('');
-
-  useEffect(() => {
-    api.get('/categories').then(({ data: d }) => setAllCats(d.categories || []));
-  }, []);
 
   const addService    = (custom = false) => setServices((p) => [...p, { ...emptyService(), is_custom: custom }]);
   const removeService = (i)              => setServices((p) => p.filter((_, j) => j !== i));
@@ -547,16 +419,11 @@ const StepServices = ({ data, onSave, onBack }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Per-service validation
     const errs = {};
-    services.forEach((s, i) => {
-      if (!s.name.trim()) errs[i] = { name: 'Service name is required' };
-    });
+    services.forEach((s, i) => { if (!s.name.trim()) errs[i] = { name: 'Service name is required' }; });
     if (Object.keys(errs).length) { setFieldErrors(errs); return; }
-
     const named = services.filter((s) => s.name.trim());
     if (!named.length) { setApiError('Add at least one service'); return; }
-
     setSaving(true);
     try {
       await api.put('/providers/onboarding/services', { services: named });
@@ -569,10 +436,10 @@ const StepServices = ({ data, onSave, onBack }) => {
   return (
     <form onSubmit={handleSubmit} noValidate>
       {apiError && <Alert type="error" message={apiError} style={{ marginBottom: 16 }} />}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 16 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 20 }}>
         {services.map((svc, i) => (
           <ServiceCard
-            key={svc._key} svc={svc} allCats={allCats}
+            key={svc._key} svc={svc} index={i} allCats={allCats}
             errors={fieldErrors[i] || {}}
             onChange={updateService(i)}
             onRemove={() => removeService(i)}
@@ -585,31 +452,16 @@ const StepServices = ({ data, onSave, onBack }) => {
         <button type="button" onClick={() => addService(false)} style={{
           flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
           fontSize: 13, fontWeight: 600, color: 'var(--color-primary)',
-          background: 'rgba(2,65,57,0.04)',
-          border: '1.5px dashed rgba(2,65,57,0.25)',
-          borderRadius: 'var(--radius-lg)', padding: '11px 16px',
-          cursor: 'pointer', transition: 'background var(--transition-fast)',
+          background: 'transparent',
+          border: '1.5px dashed var(--color-border)',
+          borderRadius: 'var(--radius-lg)', padding: '12px 16px',
+          cursor: 'pointer', transition: 'all var(--transition-fast)',
         }}
-        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(2,65,57,0.09)'}
-        onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(2,65,57,0.04)'}>
-          <PlusIcon /> Add Service
-        </button>
-        <button type="button" onClick={() => addService(true)} style={{
-          flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
-          fontSize: 13, fontWeight: 600, color: '#92400e',
-          background: 'rgba(217,119,6,0.05)',
-          border: '1.5px dashed rgba(217,119,6,0.25)',
-          borderRadius: 'var(--radius-lg)', padding: '11px 16px',
-          cursor: 'pointer', transition: 'background var(--transition-fast)',
-        }}
-        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(217,119,6,0.1)'}
-        onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(217,119,6,0.05)'}>
-          <PlusIcon /> Add Custom Service
+        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(2,65,57,0.05)'; e.currentTarget.style.borderColor = 'var(--color-primary)'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'var(--color-border)'; }}>
+          <PlusIcon /> Add another service
         </button>
       </div>
-      <p style={{ fontSize: 11, color: 'var(--color-text-muted)', marginTop: 8 }}>
-        Custom services require admin approval before appearing publicly.
-      </p>
       <StepNav onBack={onBack} loading={saving} />
     </form>
   );
@@ -721,124 +573,6 @@ const StepAvailability = ({ data, onSave, onBack }) => {
   );
 };
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   Step 6 – Blocked Times
-───────────────────────────────────────────────────────────────────────────── */
-const emptyBlock = () => ({
-  _key: `${Date.now()}-${Math.random()}`,
-  date: '', start_time: '', end_time: '', note: '', full_day: true,
-});
-
-const StepBlockedTimes = ({ data, onSave, onBack }) => {
-  const [blocks, setBlocks]     = useState(
-    (data.blocked_times || []).length
-      ? data.blocked_times.map((b) => ({ ...b, _key: `${Date.now()}-${Math.random()}`, full_day: !b.start_time }))
-      : []
-  );
-  const [saving,   setSaving]   = useState(false);
-  const [apiError, setApiError] = useState('');
-
-  const add       = () => setBlocks((p) => [...p, emptyBlock()]);
-  const remove    = (i) => setBlocks((p) => p.filter((_, j) => j !== i));
-  const set       = (i, k) => (e) => setBlocks((p) => p.map((b, j) => j === i ? { ...b, [k]: e.target.value } : b));
-  const toggleFull = (i) => setBlocks((p) => p.map((b, j) => j === i ? { ...b, full_day: !b.full_day, start_time: '', end_time: '' } : b));
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-    try {
-      const payload = blocks.filter((b) => b.date).map((b) => ({
-        date: b.date, note: b.note || null,
-        start_time: b.full_day ? null : b.start_time || null,
-        end_time:   b.full_day ? null : b.end_time   || null,
-      }));
-      await api.put('/providers/onboarding/blocked-times', { blocked_times: payload });
-      onSave({ blocked_times: payload });
-    } catch (err) {
-      setApiError(err.response?.data?.message || 'Failed to save.');
-    } finally { setSaving(false); }
-  };
-
-  const timeInputStyle = {
-    border: '1.5px solid var(--color-border)', borderRadius: 'var(--radius-md)',
-    padding: '10px 12px', fontSize: 14, outline: 'none',
-    background: 'var(--color-bg-card)', color: 'var(--color-text-primary)',
-    width: '100%', boxSizing: 'border-box',
-  };
-
-  return (
-    <form onSubmit={handleSubmit} noValidate>
-      {apiError && <Alert type="error" message={apiError} style={{ marginBottom: 16 }} />}
-      {blocks.length === 0 && (
-        <div style={{
-          textAlign: 'center', padding: '32px 20px',
-          background: 'var(--color-bg-muted)',
-          borderRadius: 'var(--radius-lg)',
-          border: '1.5px dashed var(--color-border)',
-          color: 'var(--color-text-muted)', fontSize: 14,
-          marginBottom: 16,
-        }}>
-          No blocked times yet.
-          <p style={{ fontSize: 12, marginTop: 4 }}>Add vacation days, breaks or personal time off.</p>
-        </div>
-      )}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {blocks.map((b, i) => (
-          <div key={b._key} style={{
-            border: '1.5px solid var(--color-border)',
-            borderRadius: 'var(--radius-lg)',
-            padding: 18, display: 'flex', flexDirection: 'column', gap: 14,
-            background: 'var(--color-bg-card)',
-          }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 12, alignItems: 'start' }}>
-              <Field label="Date" required>
-                <Input type="date" value={b.date} onChange={set(i, 'date')} />
-              </Field>
-              <button type="button" onClick={() => remove(i)} style={{
-                color: 'var(--color-text-muted)', background: 'none', border: 'none',
-                cursor: 'pointer', paddingTop: 26, display: 'flex',
-                transition: 'color var(--transition-fast)',
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-error)'}
-              onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-text-muted)'}>
-                <TrashIcon />
-              </button>
-            </div>
-            <Checkbox checked={b.full_day} onChange={() => toggleFull(i)} label="Full day" />
-            {!b.full_day && (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: 10, alignItems: 'end' }}>
-                <Field label="From">
-                  <input type="time" value={b.start_time} onChange={set(i, 'start_time')} style={timeInputStyle} />
-                </Field>
-                <span style={{ paddingBottom: 12, color: 'var(--color-text-muted)', fontWeight: 500 }}>–</span>
-                <Field label="To">
-                  <input type="time" value={b.end_time} onChange={set(i, 'end_time')} style={timeInputStyle} />
-                </Field>
-              </div>
-            )}
-            <Field label="Note" hint="Optional — e.g. Vacation, Public holiday">
-              <Input value={b.note} onChange={set(i, 'note')} placeholder="e.g. Vacation" />
-            </Field>
-          </div>
-        ))}
-      </div>
-      <button type="button" onClick={add} style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
-        fontSize: 13, fontWeight: 600, color: 'var(--color-primary)',
-        background: 'rgba(2,65,57,0.04)',
-        border: '1.5px dashed rgba(2,65,57,0.25)',
-        borderRadius: 'var(--radius-lg)', padding: '11px 16px',
-        cursor: 'pointer', width: '100%', marginTop: 12,
-        transition: 'background var(--transition-fast)',
-      }}
-      onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(2,65,57,0.09)'}
-      onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(2,65,57,0.04)'}>
-        <PlusIcon /> Block a Date
-      </button>
-      <StepNav onBack={onBack} loading={saving} canSkip onSkip={() => onSave({ blocked_times: [] })} />
-    </form>
-  );
-};
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Step 7 – Policies
@@ -1083,9 +817,8 @@ const ReviewRow = ({ label, value }) => (
   </div>
 );
 
-const StepReview = ({ data, allCats, onPublish, onBack, loading }) => {
+const StepReview = ({ data, onPublish, onBack, loading }) => {
   const pp       = data.profile || {};
-  const catNames = (data.categories || []).map((id) => allCats.find((c) => c.id === id)?.name).filter(Boolean).join(', ');
   const svcCount = (data.services || []).length;
 
   return (
@@ -1104,7 +837,6 @@ const StepReview = ({ data, allCats, onPublish, onBack, loading }) => {
       <ReviewRow label="Address"      value={pp.address} />
       <ReviewRow label="Instagram"    value={pp.instagram ? `@${pp.instagram}` : null} />
       <ReviewRow label="TikTok"       value={pp.tiktok   ? `@${pp.tiktok}`    : null} />
-      <ReviewRow label="Categories"   value={catNames || null} />
       <ReviewRow label="Services"     value={svcCount ? `${svcCount} service${svcCount !== 1 ? 's' : ''}` : null} />
       <ReviewRow label="Cancellation" value={{ '24h': '24-hour notice', '72h': '72-hour notice' }[pp.cancellation_policy]} />
       <ReviewRow label="Deposit"      value={{ none: 'No deposit', fixed: `€${pp.deposit_value || 0} fixed`, percentage: `${pp.deposit_value || 0}% of price` }[pp.deposit_type]} />
@@ -1139,14 +871,14 @@ export default function ProviderOnboardingPage() {
     ]).then(([statusRes, catsRes]) => {
       setData(statusRes.data);
       setAllCats(catsRes.data.categories || []);
-      const saved = Math.min(statusRes.data.profile?.onboarding_step || 1, 10);
+      const saved = Math.min(statusRes.data.profile?.onboarding_step || 1, 8);
       setStep(saved);
     }).catch(() => {}).finally(() => setBooting(false));
   }, []);
 
   const next = useCallback((updates = {}) => {
     setData((p) => ({ ...p, ...updates }));
-    setStep((s) => Math.min(s + 1, 10));
+    setStep((s) => Math.min(s + 1, 8));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
@@ -1178,16 +910,14 @@ export default function ProviderOnboardingPage() {
 
   const stepComponent = () => {
     switch (step) {
-      case 1:  return <StepLocation     data={data.profile || {}} onSave={mergeProfile} />;
-      case 2:  return <StepSocial       data={data.profile || {}} onSave={mergeProfile} onBack={back} />;
-      case 3:  return <StepCategories   data={data}               onSave={next}         onBack={back} />;
-      case 4:  return <StepServices     data={data}               onSave={next}         onBack={back} />;
-      case 5:  return <StepAvailability data={data}               onSave={next}         onBack={back} />;
-      case 6:  return <StepBlockedTimes data={data}               onSave={next}         onBack={back} />;
-      case 7:  return <StepPolicies     data={data}               onSave={next}         onBack={back} />;
-      case 8:  return <StepPayments     data={data}               onSave={next}         onBack={back} />;
-      case 9:  return <StepDescription  data={data}               onSave={next}         onBack={back} />;
-      case 10: return <StepReview       data={data} allCats={allCats} onPublish={publish} onBack={back} loading={publishing} />;
+      case 1: return <StepLocation     data={data.profile || {}} onSave={mergeProfile} />;
+      case 2: return <StepSocial       data={data.profile || {}} onSave={mergeProfile} onBack={back} />;
+      case 3: return <StepServices     data={data}               onSave={next}         onBack={back} allCats={allCats} />;
+      case 4: return <StepAvailability data={data}               onSave={next}         onBack={back} />;
+      case 5: return <StepPolicies     data={data}               onSave={next}         onBack={back} />;
+      case 6: return <StepPayments     data={data}               onSave={next}         onBack={back} />;
+      case 7: return <StepDescription  data={data}               onSave={next}         onBack={back} />;
+      case 8: return <StepReview       data={data}               onPublish={publish}   onBack={back} loading={publishing} />;
       default: return null;
     }
   };
