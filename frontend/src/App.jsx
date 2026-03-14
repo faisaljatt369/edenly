@@ -23,6 +23,7 @@ import DashboardPage from './pages/DashboardPage';
 
 // Contact & Legal
 import ContactPage      from './pages/ContactPage';
+import FAQPage          from './pages/FAQPage';
 import PrivacyPage      from './pages/legal/PrivacyPage';
 import TermsPage        from './pages/legal/TermsPage';
 import CancellationPage from './pages/legal/CancellationPage';
@@ -54,6 +55,7 @@ function App() {
 
       {/* ── Public pages ── */}
       <Route path="/contact"      element={<ContactPage />} />
+      <Route path="/faq"          element={<FAQPage />} />
       <Route path="/privacy"      element={<PrivacyPage />} />
       <Route path="/terms"        element={<TermsPage />} />
       <Route path="/cancellation" element={<CancellationPage />} />

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import AppLayout from '../components/layout/AppLayout';
 import FormField from '../components/common/FormField';
 import Alert from '../components/common/Alert';
@@ -73,61 +74,13 @@ const ChannelCard = ({ icon, label, value, sub, href }) => (
   </a>
 );
 
-/* ── FAQ accordion item ─────────────────────────────────────────────────────── */
-const FAQItem = ({ q, a, open, onToggle }) => (
-  <div style={{
-    borderRadius: 'var(--radius-lg)',
-    border: `1px solid ${open ? 'rgba(2,65,57,0.2)' : 'var(--color-border-light)'}`,
-    background: open ? 'rgba(2,65,57,0.02)' : 'var(--color-bg-card)',
-    overflow: 'hidden',
-    transition: 'all var(--transition-fast)',
-  }}>
-    <button
-      type="button" onClick={onToggle}
-      style={{
-        width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        gap: 16, padding: '16px 20px',
-        background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
-      }}
-    >
-      <span style={{ fontWeight: 600, fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)', lineHeight: 1.5 }}>{q}</span>
-      <span style={{
-        width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
-        background: open ? 'var(--color-primary)' : 'var(--color-bg-muted)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        transition: 'all var(--transition-fast)',
-      }}>
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-          stroke={open ? '#fff' : 'var(--color-text-muted)'} strokeWidth="2.5" strokeLinecap="round">
-          <polyline points={open ? '18 15 12 9 6 15' : '6 9 12 15 18 9'} />
-        </svg>
-      </span>
-    </button>
-    {open && (
-      <div style={{ padding: '0 20px 18px', borderTop: '1px solid rgba(2,65,57,0.08)' }}>
-        <p style={{ paddingTop: 14, fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.75 }}>{a}</p>
-      </div>
-    )}
-  </div>
-);
-
 /* ── Page ───────────────────────────────────────────────────────────────────── */
-const FAQS = [
-  { q: 'How do I book a service?', a: "Search for providers, pick a service and time slot that works for you, and confirm your booking. You'll receive a confirmation by email." },
-  { q: 'How do I become a provider?', a: 'Register as a provider, complete your profile with your services and location, and our team will review and activate your listing.' },
-  { q: 'What payment methods are accepted?', a: 'We accept all major credit/debit cards via Stripe. Providers may also accept deposits — all transactions are processed securely.' },
-  { q: 'Is Edenly available outside Germany?', a: 'Currently Edenly is focused on the German market. We plan to expand to Austria and Switzerland soon.' },
-  { q: 'How do I cancel a booking?', a: "You can cancel a booking through your dashboard. Please check the provider's cancellation policy before booking." },
-  { q: 'How is my data protected?', a: 'We comply fully with GDPR. Your data is stored securely in Germany and is never shared with third parties without your consent.' },
-];
-
 const ContactPage = () => {
-  const [form, setForm]       = useState({ name: '', email: '', subject: '', message: '', type: 'general' });
-  const [errors, setErrors]   = useState({});
-  const [sent, setSent]       = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [form, setForm]         = useState({ name: '', email: '', subject: '', message: '', type: 'general' });
+  const [errors, setErrors]     = useState({});
+  const [sent, setSent]         = useState(false);
+  const [loading, setLoading]   = useState(false);
   const [apiError, setApiError] = useState('');
-  const [openFaq, setOpenFaq] = useState(0);
 
   const validate = () => {
     const e = {};
@@ -279,21 +232,103 @@ const ContactPage = () => {
           )}
         </div>
 
-        {/* ── Right: FAQ ── */}
-        <div>
-          <div style={{ marginBottom: 24 }}>
+        {/* ── Right: FAQ link panel ── */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ marginBottom: 8 }}>
             <h2 style={{ fontSize: 'var(--font-size-xl)', fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 6 }}>
               Frequently asked questions
             </h2>
             <p style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--font-size-sm)' }}>
-              Can't find an answer? <a href="mailto:hello@edenly.de" style={{ color: 'var(--color-primary)', fontWeight: 600, textDecoration: 'none' }}>Email us directly →</a>
+              We've put together answers for both customers and providers.
             </p>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {FAQS.map(({ q, a }, i) => (
-              <FAQItem key={i} q={q} a={a} open={openFaq === i} onToggle={() => setOpenFaq(openFaq === i ? null : i)} />
-            ))}
+          {[
+            {
+              to: '/faq',
+              state: 'customer',
+              icon: (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                </svg>
+              ),
+              label: 'FAQ for Customers',
+              desc: 'Booking, payments, cancellations & more',
+              count: 9,
+            },
+            {
+              to: '/faq',
+              state: 'provider',
+              icon: (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                </svg>
+              ),
+              label: 'FAQ for Providers',
+              desc: 'Listings, availability, policies & more',
+              count: 9,
+            },
+          ].map(({ to, icon, label, desc, count }) => (
+            <Link key={label} to={to} style={{ textDecoration: 'none' }}>
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 16,
+                padding: '20px 22px',
+                background: 'var(--color-bg-card)',
+                border: '1px solid var(--color-border-light)',
+                borderRadius: 'var(--radius-xl)',
+                boxShadow: 'var(--shadow-sm)',
+                cursor: 'pointer',
+                transition: 'all var(--transition-base)',
+              }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = '0 8px 32px rgba(2,65,57,0.12)';
+                  e.currentTarget.style.borderColor = 'rgba(2,65,57,0.25)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
+                  e.currentTarget.style.borderColor = 'var(--color-border-light)';
+                  e.currentTarget.style.transform = 'none';
+                }}
+              >
+                <div style={{
+                  width: 48, height: 48, borderRadius: 14, flexShrink: 0,
+                  background: 'linear-gradient(135deg, rgba(2,65,57,0.1) 0%, rgba(73,169,108,0.12) 100%)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: 'var(--color-primary)',
+                }}>{icon}</div>
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontWeight: 700, fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)', marginBottom: 3 }}>{label}</p>
+                  <p style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{desc}</p>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+                  <span style={{
+                    fontSize: 11, fontWeight: 600, color: 'var(--color-primary)',
+                    background: 'rgba(2,65,57,0.08)', borderRadius: 20, padding: '2px 10px',
+                  }}>{count} questions</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="2" strokeLinecap="round">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </div>
+              </div>
+            </Link>
+          ))}
+
+          {/* Quick contact nudge */}
+          <div style={{
+            padding: '18px 22px',
+            borderRadius: 'var(--radius-xl)',
+            background: 'rgba(2,65,57,0.04)',
+            border: '1px solid rgba(2,65,57,0.1)',
+          }}>
+            <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.65 }}>
+              Can't find your answer?{' '}
+              <a href="mailto:hello@edenly.de" style={{ color: 'var(--color-primary)', fontWeight: 600, textDecoration: 'none' }}>
+                Email us directly
+              </a>
+              {' '}and we'll get back to you within 24 hours.
+            </p>
           </div>
         </div>
       </div>
