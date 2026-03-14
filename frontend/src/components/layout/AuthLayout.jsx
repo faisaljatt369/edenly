@@ -1,123 +1,152 @@
 import { Link } from 'react-router-dom';
 import Logo from '../common/Logo';
 
-const quotes = [
-  { text: 'Your beauty, your rules.', sub: 'Connect with top-rated providers near you.' },
-  { text: 'Grow your business with Edenly.', sub: 'Thousands of customers are looking for you.' },
-  { text: 'Book in seconds, smile for hours.', sub: 'The marketplace for beauty & wellness.' },
-];
-const quote = quotes[Math.floor(Math.random() * quotes.length)];
-
-const AuthLayout = ({ children, title, subtitle }) => {
-  return (
+const AuthLayout = ({ title, subtitle, children }) => (
+  <div style={{
+    minHeight: '100vh',
+    display: 'flex',
+    alignItems: 'flex-start',
+    fontFamily: 'var(--font-sans)',
+    background: 'var(--color-bg-app)',
+  }}>
+    {/* ── Left brand panel ────────────────────────────────────────── */}
     <div style={{
+      display: 'none',
+      width: '42%',
+      flexShrink: 0,
+      background: 'var(--gradient-brand)',
+      position: 'sticky',
+      top: 0,
       height: '100vh',
-      display: 'flex',
-      overflow: 'hidden',           /* prevent outer scroll */
-      background: 'var(--color-bg-app)',
-      fontFamily: 'var(--font-sans)',
-    }}>
+      overflow: 'hidden',
+      padding: '48px 52px',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+    }} className="auth-left-panel">
+      {/* Decorative circles */}
+      <div style={{
+        position: 'absolute', top: -80, right: -80,
+        width: 320, height: 320, borderRadius: '50%',
+        background: 'rgba(255,255,255,0.06)', pointerEvents: 'none',
+      }} />
+      <div style={{
+        position: 'absolute', bottom: -60, left: -60,
+        width: 240, height: 240, borderRadius: '50%',
+        background: 'rgba(255,255,255,0.05)', pointerEvents: 'none',
+      }} />
+      <div style={{
+        position: 'absolute', bottom: 140, right: -40,
+        width: 160, height: 160, borderRadius: '50%',
+        background: 'rgba(255,255,255,0.04)', pointerEvents: 'none',
+      }} />
 
-      {/* ── Left Brand Panel — sticky, never scrolls ── */}
-      <div
-        className="auth-brand-panel"
-        style={{
-          width: '42%',
-          flexShrink: 0,
-          position: 'sticky',
-          top: 0,
-          height: '100vh',
-          background: 'var(--gradient-brand)',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          padding: '48px 52px',
-          overflow: 'hidden',
-        }}
-      >
-        {/* Decorative circles */}
-        <div style={{ position:'absolute', top: -80, right: -80, width: 280, height: 280, borderRadius:'50%', background:'rgba(255,255,255,0.05)' }} />
-        <div style={{ position:'absolute', bottom: -60, left: -60, width: 220, height: 220, borderRadius:'50%', background:'rgba(255,255,255,0.06)' }} />
-        <div style={{ position:'absolute', top: '45%', right: -40, width: 140, height: 140, borderRadius:'50%', background:'rgba(255,255,255,0.04)' }} />
+      {/* Logo */}
+      <Link to="/" style={{ textDecoration: 'none', display: 'inline-flex', zIndex: 1 }}>
+        <Logo size={38} light />
+      </Link>
 
-        {/* Logo */}
-        <Link to="/" style={{ textDecoration: 'none', position: 'relative', zIndex: 1 }}>
-          <Logo size={40} light showText />
-        </Link>
-
-        {/* Quote */}
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <p style={{
-            color: '#fff', fontSize: 'var(--font-size-2xl)', fontWeight: 700,
-            lineHeight: 1.3, letterSpacing: '-0.02em', marginBottom: 16,
-          }}>
-            "{quote.text}"
-          </p>
-          <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 'var(--font-size-base)', lineHeight: 1.6 }}>
-            {quote.sub}
-          </p>
-        </div>
-
-        {/* Footer */}
-        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 'var(--font-size-xs)', position: 'relative', zIndex: 1 }}>
-          © {new Date().getFullYear()} Edenly · All rights reserved
+      {/* Center copy */}
+      <div style={{ zIndex: 1 }}>
+        <p style={{
+          fontSize: 11, fontWeight: 600, letterSpacing: '0.12em',
+          textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)',
+          marginBottom: 16,
+        }}>
+          Beauty & Wellness Marketplace
+        </p>
+        <h2 style={{
+          fontSize: 'clamp(1.6rem, 2.4vw, 2.2rem)',
+          fontWeight: 700, color: '#fff',
+          lineHeight: 1.25, letterSpacing: '-0.02em',
+          marginBottom: 20,
+        }}>
+          Your beauty journey<br />starts here.
+        </h2>
+        <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.7)', lineHeight: 1.65, maxWidth: 320 }}>
+          Book top beauty and wellness professionals near you, or grow your own business on Edenly.
         </p>
       </div>
 
-      {/* ── Right Form Panel — scrollable, vertically centred ── */}
+      {/* Bottom trust pill */}
       <div style={{
-        flex: 1,
-        height: '100vh',
-        overflowY: 'auto',
+        display: 'flex', gap: 24, zIndex: 1,
+        flexWrap: 'wrap',
+      }}>
+        {['Trusted providers', 'Secure booking', 'GDPR compliant'].map((tag) => (
+          <div key={tag} style={{
+            display: 'flex', alignItems: 'center', gap: 6,
+            fontSize: 12, color: 'rgba(255,255,255,0.65)', fontWeight: 500,
+          }}>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="8" r="7" stroke="rgba(255,255,255,0.4)" strokeWidth="1.2" />
+              <polyline points="4.5,8 7,10.5 11.5,5.5" stroke="rgba(255,255,255,0.85)"
+                strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            {tag}
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* ── Right form panel ─────────────────────────────────────────── */}
+    <div style={{
+      flex: 1,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '32px 16px',
+      overflowY: 'auto',
+    }}>
+      <div style={{
+        width: '100%',
+        maxWidth: 460,
         display: 'flex',
         flexDirection: 'column',
+        gap: 0,
       }}>
-        {/* Inner wrapper: centres content when short, grows when tall */}
-        <div style={{
-          flex: 1,
+        {/* Mobile logo */}
+        <div className="auth-mobile-logo" style={{
           display: 'flex',
-          alignItems: 'center',
           justifyContent: 'center',
-          padding: '48px 40px',
-          minHeight: 'min-content',
+          marginBottom: 28,
         }}>
-        <div style={{ width: '100%', maxWidth: 480 }}>
-
-          {/* Mobile logo */}
-          <div className="auth-mobile-logo" style={{ display: 'none', marginBottom: 'var(--space-8)' }}>
+          <Link to="/">
             <Logo size={36} />
-          </div>
+          </Link>
+        </div>
 
-          {title && (
-            <div style={{ marginBottom: 'var(--space-6)' }}>
+        {/* Header */}
+        {(title || subtitle) && (
+          <div style={{ marginBottom: 28, textAlign: 'center' }}>
+            {title && (
               <h1 style={{
                 fontSize: 'var(--font-size-2xl)', fontWeight: 700,
                 color: 'var(--color-text-primary)', letterSpacing: '-0.02em',
-                marginBottom: 8, lineHeight: 1.2,
+                marginBottom: 6,
               }}>
                 {title}
               </h1>
-              {subtitle && (
-                <p style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--font-size-sm)', lineHeight: 1.6 }}>
-                  {subtitle}
-                </p>
-              )}
-            </div>
-          )}
+            )}
+            {subtitle && (
+              <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)' }}>
+                {subtitle}
+              </p>
+            )}
+          </div>
+        )}
 
-          {children}
-        </div>
-        </div>
+        {children}
       </div>
-
-      <style>{`
-        @media (max-width: 768px) {
-          .auth-brand-panel { display: none !important; }
-          .auth-mobile-logo { display: flex !important; }
-        }
-      `}</style>
     </div>
-  );
-};
+
+    {/* Responsive: show left panel on wide screens */}
+    <style>{`
+      @media (min-width: 700px) {
+        .auth-left-panel { display: flex !important; }
+        .auth-mobile-logo { display: none !important; }
+      }
+    `}</style>
+  </div>
+);
 
 export default AuthLayout;
