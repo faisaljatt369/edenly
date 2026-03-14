@@ -1,6 +1,9 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 
+// Homepage
+import HomePage from './pages/HomePage';
+
 // Auth pages
 import LoginPage           from './pages/auth/LoginPage';
 import RegisterPage        from './pages/auth/RegisterPage';
@@ -31,6 +34,9 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 function App() {
   return (
     <Routes>
+      {/* ── Homepage ── */}
+      <Route path="/" element={<HomePage />} />
+
       {/* ── Public auth routes ── */}
       <Route path="/login"           element={<LoginPage />} />
       <Route path="/register"        element={<RegisterPage />} />
@@ -55,9 +61,6 @@ function App() {
 
       {/* ── Error pages ── */}
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
-
-      {/* ── Root redirect ── */}
-      <Route path="/" element={<Navigate to="/register" replace />} />
 
       {/* ── 404 ── */}
       <Route path="*" element={<NotFoundPage />} />
