@@ -3,7 +3,28 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   Icons  (20px, strokeWidth 1.7)
+   Theme tokens — dark slate sidebar
+───────────────────────────────────────────────────────────────────────────── */
+const S = {
+  bg:           '#0F172A',
+  bgHover:      'rgba(255,255,255,0.06)',
+  bgActive:     'rgba(73,169,108,0.18)',
+  border:       'rgba(255,255,255,0.07)',
+  divider:      'rgba(255,255,255,0.08)',
+  textMuted:    '#64748B',
+  textNormal:   '#94A3B8',
+  textActive:   '#ffffff',
+  sectionLabel: '#475569',
+  iconMuted:    '#4B5563',
+  iconActive:   '#49A96C',
+  cardBg:       'rgba(255,255,255,0.05)',
+  cardBorder:   'rgba(255,255,255,0.09)',
+  nameColor:    '#E2E8F0',
+  roleColor:    '#49A96C',
+};
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Icons  (19px, strokeWidth 1.7)
 ───────────────────────────────────────────────────────────────────────────── */
 const Icons = {
   home:     () => <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
@@ -20,7 +41,6 @@ const Icons = {
   menu:     () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="15" y2="18"/></svg>,
   close:    () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
   chevronD: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><polyline points="6 9 12 15 18 9"/></svg>,
-  chevronR: () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>,
 };
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -59,7 +79,7 @@ export const CUSTOMER_NAV = [
 ];
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   Sidebar nav item
+   Sidebar nav item — dark slate variant
 ───────────────────────────────────────────────────────────────────────────── */
 const NavItem = ({ item, active, onClick }) => {
   const IconComp = Icons[item.icon];
@@ -69,23 +89,33 @@ const NavItem = ({ item, active, onClick }) => {
       onClick={onClick}
       style={{
         display: 'flex', alignItems: 'center', gap: 12,
-        padding: '10px 16px',
-        margin: '1px 0',
-        borderRadius: 10,
+        padding: '9px 14px',
+        margin: '2px 0',
+        borderRadius: 9,
         textDecoration: 'none',
-        color: active ? 'var(--color-primary)' : '#64748B',
-        background: active ? '#EEF5F2' : 'transparent',
-        fontWeight: active ? 600 : 500,
-        fontSize: 14,
+        color: active ? S.textActive : S.textNormal,
+        background: active ? S.bgActive : 'transparent',
+        fontWeight: active ? 600 : 400,
+        fontSize: 13.5,
         transition: 'all 0.14s ease',
         outline: 'none',
       }}
-      onMouseEnter={(e) => { if (!active) { e.currentTarget.style.background = '#F5F8F7'; e.currentTarget.style.color = '#374151'; } }}
-      onMouseLeave={(e) => { if (!active) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#64748B'; } }}
+      onMouseEnter={(e) => {
+        if (!active) {
+          e.currentTarget.style.background = S.bgHover;
+          e.currentTarget.style.color = '#CBD5E1';
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!active) {
+          e.currentTarget.style.background = 'transparent';
+          e.currentTarget.style.color = S.textNormal;
+        }
+      }}
     >
       <span style={{
         display: 'flex', flexShrink: 0,
-        color: active ? 'var(--color-primary)' : '#94A3B8',
+        color: active ? S.iconActive : S.iconMuted,
         transition: 'color 0.14s',
       }}>
         {IconComp && <IconComp />}
@@ -93,7 +123,7 @@ const NavItem = ({ item, active, onClick }) => {
       <span style={{ flex: 1, lineHeight: 1 }}>{item.label}</span>
       {item.badge > 0 && (
         <span style={{
-          background: 'var(--color-secondary)', color: '#fff',
+          background: '#49A96C', color: '#fff',
           fontSize: 10, fontWeight: 700, minWidth: 18, height: 18,
           borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center',
           padding: '0 5px',
@@ -130,17 +160,17 @@ export default function DashboardLayout({ navItems = [], pageTitle, pageTitleMap
 
   /* ── Sidebar inner content ── */
   const sidebarContent = (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#fff' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: S.bg }}>
 
       {/* ── Logo ── */}
-      <div style={{ padding: '22px 22px 16px', flexShrink: 0 }}>
+      <div style={{ padding: '22px 20px 18px', flexShrink: 0 }}>
         <Link to="/dashboard" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
           {/* Brand mark */}
           <div style={{
             width: 34, height: 34, borderRadius: 10, flexShrink: 0,
             background: 'linear-gradient(135deg, #024139 0%, #0A544A 60%, #49A96C 100%)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 2px 8px rgba(2,65,57,0.25)',
+            boxShadow: '0 2px 10px rgba(73,169,108,0.35)',
           }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
               <path d="M12 3L4 8v8l8 5 8-5V8z" stroke="#fff" strokeWidth="1.6" strokeLinejoin="round"/>
@@ -148,10 +178,10 @@ export default function DashboardLayout({ navItems = [], pageTitle, pageTitleMap
             </svg>
           </div>
           <div>
-            <p style={{ fontSize: 17, fontWeight: 800, color: '#0F172A', letterSpacing: '-0.04em', lineHeight: 1, fontFamily: 'var(--font-sans)' }}>
+            <p style={{ fontSize: 17, fontWeight: 800, color: '#fff', letterSpacing: '-0.04em', lineHeight: 1 }}>
               edenly
             </p>
-            <p style={{ fontSize: 9.5, color: '#94A3B8', fontWeight: 600, letterSpacing: '0.07em', textTransform: 'uppercase', lineHeight: 1, marginTop: 2 }}>
+            <p style={{ fontSize: 9.5, color: '#475569', fontWeight: 600, letterSpacing: '0.07em', textTransform: 'uppercase', lineHeight: 1, marginTop: 2 }}>
               {user?.role === 'provider' ? 'Business' : 'Customer'}
             </p>
           </div>
@@ -159,17 +189,17 @@ export default function DashboardLayout({ navItems = [], pageTitle, pageTitleMap
       </div>
 
       {/* ── Divider ── */}
-      <div style={{ height: 1, background: '#F1F5F9', margin: '0 16px 14px' }} />
+      <div style={{ height: 1, background: S.divider, margin: '0 14px 12px' }} />
 
       {/* ── Nav sections ── */}
-      <nav style={{ flex: 1, overflowY: 'auto', padding: '0 14px', scrollbarWidth: 'none' }}>
+      <nav style={{ flex: 1, overflowY: 'auto', padding: '0 10px', scrollbarWidth: 'none' }}>
         {navItems.map((group, gi) => (
-          <div key={gi} style={{ marginBottom: 18 }}>
+          <div key={gi} style={{ marginBottom: 20 }}>
             {/* Section label */}
             <p style={{
-              fontSize: 10, fontWeight: 700, letterSpacing: '0.09em',
-              textTransform: 'uppercase', color: '#CBD5E1',
-              padding: '0 4px 8px',
+              fontSize: 10, fontWeight: 700, letterSpacing: '0.1em',
+              textTransform: 'uppercase', color: S.sectionLabel,
+              padding: '0 6px 7px',
             }}>
               {group.section}
             </p>
@@ -188,9 +218,9 @@ export default function DashboardLayout({ navItems = [], pageTitle, pageTitleMap
         {/* Account section */}
         <div style={{ marginBottom: 8 }}>
           <p style={{
-            fontSize: 10, fontWeight: 700, letterSpacing: '0.09em',
-            textTransform: 'uppercase', color: '#CBD5E1',
-            padding: '0 4px 8px',
+            fontSize: 10, fontWeight: 700, letterSpacing: '0.1em',
+            textTransform: 'uppercase', color: S.sectionLabel,
+            padding: '0 6px 7px',
           }}>
             Account
           </p>
@@ -203,19 +233,19 @@ export default function DashboardLayout({ navItems = [], pageTitle, pageTitleMap
       </nav>
 
       {/* ── User profile card (bottom) ── */}
-      <div style={{ flexShrink: 0, padding: '10px 14px 18px', borderTop: '1px solid #F1F5F9' }}>
+      <div style={{ flexShrink: 0, padding: '8px 10px 16px', borderTop: `1px solid ${S.divider}` }}>
         <div style={{
-          display: 'flex', alignItems: 'center', gap: 11,
-          padding: '10px 12px', borderRadius: 12,
-          background: '#F8FAFC',
-          border: '1px solid #E2E8F0',
+          display: 'flex', alignItems: 'center', gap: 10,
+          padding: '10px 12px', borderRadius: 11,
+          background: S.cardBg,
+          border: `1px solid ${S.cardBorder}`,
         }}>
           {/* Avatar */}
           <div style={{
-            width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+            width: 34, height: 34, borderRadius: 9, flexShrink: 0,
             background: 'linear-gradient(135deg, #024139, #49A96C)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 13, fontWeight: 800, color: '#fff',
+            fontSize: 12, fontWeight: 800, color: '#fff',
             letterSpacing: '0.02em',
           }}>
             {initials}
@@ -223,13 +253,12 @@ export default function DashboardLayout({ navItems = [], pageTitle, pageTitleMap
 
           {/* Name + role */}
           <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', lineHeight: 1.3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <p style={{ fontSize: 13, fontWeight: 600, color: S.nameColor, lineHeight: 1.3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {fullName || 'User'}
             </p>
             <p style={{
               fontSize: 10.5, fontWeight: 600, lineHeight: 1.2, marginTop: 2,
-              color: 'var(--color-secondary)',
-              textTransform: 'capitalize',
+              color: S.roleColor, textTransform: 'capitalize',
             }}>
               {user?.role}
             </p>
@@ -241,12 +270,11 @@ export default function DashboardLayout({ navItems = [], pageTitle, pageTitleMap
             title="Log out"
             style={{
               background: 'none', border: 'none', cursor: 'pointer', padding: 6, borderRadius: 8,
-              color: '#94A3B8', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              transition: 'all 0.14s',
-              flexShrink: 0,
+              color: '#475569', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'all 0.14s', flexShrink: 0,
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = '#FEE2E2'; e.currentTarget.style.color = '#EF4444'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#94A3B8'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(239,68,68,0.15)'; e.currentTarget.style.color = '#F87171'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#475569'; }}
           >
             <Icons.logout />
           </button>
@@ -263,11 +291,11 @@ export default function DashboardLayout({ navItems = [], pageTitle, pageTitleMap
         className="db-sidebar"
         style={{
           width: 280, flexShrink: 0,
-          background: '#fff',
-          borderRight: '1px solid #E8EEF2',
+          background: S.bg,
+          borderRight: `1px solid ${S.border}`,
           position: 'sticky', top: 0, height: '100vh',
           overflowY: 'auto', overflowX: 'hidden',
-          boxShadow: '2px 0 16px rgba(15,23,42,0.04)',
+          boxShadow: '4px 0 24px rgba(0,0,0,0.25)',
         }}
       >
         {sidebarContent}
@@ -281,9 +309,9 @@ export default function DashboardLayout({ navItems = [], pageTitle, pageTitleMap
         >
           <div
             style={{
-              width: 280, height: '100%', background: '#fff',
+              width: 280, height: '100%', background: S.bg,
               position: 'relative', zIndex: 201, overflowY: 'auto',
-              boxShadow: '4px 0 24px rgba(15,23,42,0.12)',
+              boxShadow: '4px 0 32px rgba(0,0,0,0.4)',
             }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -291,15 +319,15 @@ export default function DashboardLayout({ navItems = [], pageTitle, pageTitleMap
               onClick={() => setMobileOpen(false)}
               style={{
                 position: 'absolute', top: 16, right: 14,
-                background: '#F1F5F9', border: 'none', borderRadius: 8,
-                color: '#64748B', cursor: 'pointer', padding: '6px 7px', display: 'flex',
+                background: 'rgba(255,255,255,0.08)', border: 'none', borderRadius: 8,
+                color: '#94A3B8', cursor: 'pointer', padding: '6px 7px', display: 'flex',
               }}
             >
               <Icons.close />
             </button>
             {sidebarContent}
           </div>
-          <div style={{ flex: 1, background: 'rgba(15,23,42,0.3)', backdropFilter: 'blur(2px)' }} />
+          <div style={{ flex: 1, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(3px)' }} />
         </div>
       )}
 
