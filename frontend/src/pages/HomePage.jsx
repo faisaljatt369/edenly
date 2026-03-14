@@ -650,102 +650,101 @@ const CategoriesSection = () => (
 );
 
 /* ─────────────────────────────────────────────────────────────────
-   HOW IT WORKS
+   HOW IT WORKS  — modern card layout
 ───────────────────────────────────────────────────────────────── */
 const HowItWorks = () => (
-  <section style={{ background: '#ffffff', padding: '88px 0' }}>
+  <section style={{ background: '#fff', padding: '96px 0' }}>
     <div style={{ maxWidth: 1440, margin: '0 auto', padding: '0 var(--space-6)' }}>
-      {/* Header */}
-      <div style={{ textAlign: 'center', maxWidth: 540, margin: '0 auto 56px' }}>
-        <p style={{
-          fontSize: 12, fontWeight: 700, letterSpacing: '0.1em',
-          textTransform: 'uppercase', color: 'var(--color-secondary)',
-          marginBottom: 8,
-        }}>How It Works</p>
-        <h2 style={{
-          fontSize: 'clamp(1.6rem, 3vw, 2.25rem)',
-          fontWeight: 700, letterSpacing: '-0.02em',
-          color: 'var(--color-text-primary)', margin: '0 0 12px',
-        }}>
-          Book in 3 Simple Steps
-        </h2>
-        <p style={{ fontSize: 15, color: 'var(--color-text-secondary)', lineHeight: 1.65 }}>
-          From discovery to appointment — fast, simple, and all in one place.
-        </p>
+
+      {/* Split header + CTA */}
+      <div style={{
+        display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between',
+        marginBottom: 56, flexWrap: 'wrap', gap: 20,
+      }}>
+        <div>
+          <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-secondary)', marginBottom: 8 }}>How It Works</p>
+          <h2 style={{ fontSize: 'clamp(1.7rem, 3vw, 2.4rem)', fontWeight: 700, letterSpacing: '-0.025em', color: 'var(--color-text-primary)', margin: 0, lineHeight: 1.15 }}>
+            Book in 3<br />Simple Steps
+          </h2>
+        </div>
+        <Link to="/register" style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          background: 'var(--color-primary)', color: '#fff',
+          padding: '13px 26px', borderRadius: 'var(--radius-full)',
+          fontWeight: 600, fontSize: 14.5, textDecoration: 'none',
+          transition: 'background 0.18s',
+        }}
+          onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-primary-hover)'}
+          onMouseLeave={(e) => e.currentTarget.style.background = 'var(--color-primary)'}
+        >
+          Jetzt starten <ArrowRight />
+        </Link>
       </div>
 
-      {/* Steps */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: 32,
-        position: 'relative',
-      }} className="steps-grid">
-        {/* Connector line */}
-        <div aria-hidden style={{
-          position: 'absolute',
-          top: 44, left: '20%', right: '20%',
-          height: 1,
-          background: 'linear-gradient(to right, var(--color-border) 0%, var(--color-secondary) 50%, var(--color-border) 100%)',
-          zIndex: 0,
-        }} className="steps-connector" />
-
+      {/* Step cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }} className="steps-grid">
         {HOW_STEPS.map((step, i) => (
           <div key={i} style={{
-            display: 'flex', flexDirection: 'column', alignItems: 'center',
-            textAlign: 'center', padding: '0 16px',
-            position: 'relative', zIndex: 1,
-          }}>
-            {/* Step number circle */}
+            background: i === 1 ? 'var(--color-primary)' : 'var(--color-bg-app)',
+            borderRadius: 'var(--radius-2xl)',
+            padding: '36px 32px 40px',
+            position: 'relative',
+            overflow: 'hidden',
+            transition: 'transform 0.22s var(--ease), box-shadow 0.22s var(--ease)',
+          }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = i === 1 ? '0 20px 48px rgba(2,65,57,0.28)' : 'var(--shadow-lg)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
+          >
+            {/* Oversized decorative step number */}
+            <span aria-hidden style={{
+              position: 'absolute', bottom: -12, right: 16,
+              fontSize: 120, fontWeight: 900, lineHeight: 1,
+              letterSpacing: '-0.04em',
+              color: i === 1 ? 'rgba(255,255,255,0.06)' : 'rgba(2,65,57,0.05)',
+              pointerEvents: 'none', userSelect: 'none',
+            }}>{`0${i + 1}`}</span>
+
+            {/* Step pill */}
             <div style={{
-              width: 88, height: 88,
-              background: i === 1 ? 'var(--color-primary)' : '#fff',
-              border: `2px solid ${i === 1 ? 'var(--color-primary)' : 'var(--color-border)'}`,
-              borderRadius: '50%',
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              background: i === 1 ? 'rgba(255,255,255,0.15)' : 'rgba(2,65,57,0.08)',
+              borderRadius: 'var(--radius-full)',
+              padding: '4px 12px', marginBottom: 28,
+            }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: i === 1 ? '#fff' : 'var(--color-secondary)', flexShrink: 0 }} />
+              <span style={{ fontSize: 11.5, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: i === 1 ? '#fff' : 'var(--color-primary)' }}>
+                Step 0{i + 1}
+              </span>
+            </div>
+
+            {/* Icon */}
+            <div style={{
+              width: 52, height: 52, borderRadius: 'var(--radius-lg)',
+              background: i === 1 ? 'rgba(255,255,255,0.18)' : 'var(--color-primary)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: i === 1 ? '#fff' : 'var(--color-primary)',
-              marginBottom: 28,
-              boxShadow: i === 1 ? '0 8px 24px rgba(2,65,57,0.22)' : 'var(--shadow-sm)',
-              position: 'relative',
+              color: '#fff',
+              marginBottom: 24,
             }}>
               {step.icon}
-              {/* Step number badge */}
-              <div style={{
-                position: 'absolute', top: -6, right: -6,
-                width: 22, height: 22, borderRadius: '50%',
-                background: i === 1 ? 'var(--color-secondary)' : 'var(--color-bg-muted)',
-                border: '2px solid #fff',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 10, fontWeight: 700,
-                color: i === 1 ? '#fff' : 'var(--color-text-muted)',
-              }}>{i + 1}</div>
             </div>
 
             <h3 style={{
-              fontSize: 18, fontWeight: 700, letterSpacing: '-0.01em',
-              color: 'var(--color-text-primary)', marginBottom: 10,
+              fontSize: 20, fontWeight: 700, letterSpacing: '-0.02em',
+              color: i === 1 ? '#fff' : 'var(--color-text-primary)',
+              marginBottom: 10, lineHeight: 1.2,
             }}>{step.title}</h3>
             <p style={{
-              fontSize: 14.5, color: 'var(--color-text-secondary)',
-              lineHeight: 1.65, maxWidth: 280,
+              fontSize: 14.5,
+              color: i === 1 ? 'rgba(255,255,255,0.72)' : 'var(--color-text-secondary)',
+              lineHeight: 1.65,
             }}>{step.desc}</p>
           </div>
         ))}
       </div>
-
-      {/* CTA */}
-      <div style={{ textAlign: 'center', marginTop: 52 }}>
-        <Link to="/register" className="btn btn-primary">
-          Jetzt kostenlos registrieren →
-        </Link>
-      </div>
     </div>
 
     <style>{`
-      @media (max-width: 700px) {
-        .steps-grid { grid-template-columns: 1fr !important; gap: 48px !important; }
-        .steps-connector { display: none !important; }
-      }
+      @media (max-width: 768px) { .steps-grid { grid-template-columns: 1fr !important; gap: 16px !important; } }
     `}</style>
   </section>
 );
@@ -786,40 +785,40 @@ const StatsStrip = () => (
 );
 
 /* ─────────────────────────────────────────────────────────────────
-   FEATURED PROVIDERS TEASER
+   FEATURED PROVIDERS  — modern Fresha-style cards
 ───────────────────────────────────────────────────────────────── */
 const FEATURED = [
   {
     name: "Zara's Braid Studio",
     service: 'Braids & Locs',
     location: 'Berlin Mitte',
-    rating: 4.9,
-    reviews: 138,
+    rating: 4.9, reviews: 138,
     price: 'ab 75 €',
-    badge: 'Top Rated',
-    img: 'https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=500&h=340&fit=crop&q=80&auto=format',
+    next: 'Heute, 14:00',
+    tags: ['Box Braids', 'Knotless', 'Faux Locs'],
+    img: 'https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=380&fit=crop&q=80&auto=format',
     avatar: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=80&h=80&fit=crop&q=80&auto=format',
   },
   {
     name: 'Amara Beauty Lounge',
     service: 'Natural Hair & Treatments',
     location: 'Hamburg Altona',
-    rating: 4.8,
-    reviews: 92,
+    rating: 4.8, reviews: 92,
     price: 'ab 60 €',
-    badge: 'New',
-    img: 'https://images.unsplash.com/photo-1519014816548-bf5fe059798b?w=500&h=340&fit=crop&q=80&auto=format',
+    next: 'Morgen, 10:30',
+    tags: ['Natural Hair', 'TWA', 'Silk Press'],
+    img: 'https://images.unsplash.com/photo-1519014816548-bf5fe059798b?w=600&h=380&fit=crop&q=80&auto=format',
     avatar: 'https://images.unsplash.com/photo-1499952127939-9bbf5af6c51c?w=80&h=80&fit=crop&q=80&auto=format',
   },
   {
     name: 'Glam House München',
     service: 'Makeup & Lashes',
     location: 'München Schwabing',
-    rating: 5.0,
-    reviews: 61,
+    rating: 5.0, reviews: 61,
     price: 'ab 90 €',
-    badge: 'Top Rated',
-    img: 'https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=500&h=340&fit=crop&q=80&auto=format',
+    next: 'Heute, 17:30',
+    tags: ['Bridal', 'Lashes', 'Editorial'],
+    img: 'https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=600&h=380&fit=crop&q=80&auto=format',
     avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=80&h=80&fit=crop&q=80&auto=format',
   },
 ];
@@ -832,82 +831,104 @@ const ProviderCard = ({ p }) => {
       onMouseLeave={() => setHov(false)}
       style={{
         background: '#fff',
-        borderRadius: 'var(--radius-xl)',
+        borderRadius: 'var(--radius-2xl)',
         overflow: 'hidden',
-        border: `1.5px solid ${hov ? 'rgba(73,169,108,0.35)' : 'var(--color-border-light)'}`,
-        boxShadow: hov ? 'var(--shadow-lg)' : 'var(--shadow-sm)',
-        transform: hov ? 'translateY(-5px)' : 'translateY(0)',
+        border: `1px solid ${hov ? 'rgba(2,65,57,0.18)' : 'var(--color-border-light)'}`,
+        boxShadow: hov ? '0 12px 40px rgba(2,65,57,0.12)' : 'var(--shadow-xs)',
+        transform: hov ? 'translateY(-4px)' : 'translateY(0)',
         transition: 'all 0.24s var(--ease)',
         cursor: 'pointer',
       }}
     >
       {/* Cover image */}
-      <div style={{ position: 'relative', paddingBottom: '62%', overflow: 'hidden' }}>
+      <div style={{ position: 'relative', paddingBottom: '58%', overflow: 'hidden' }}>
         <img
-          src={p.img}
-          alt={p.name}
+          src={p.img} alt={p.name}
           style={{
             position: 'absolute', inset: 0, width: '100%', height: '100%',
             objectFit: 'cover',
-            transform: hov ? 'scale(1.05)' : 'scale(1)',
-            transition: 'transform 0.4s var(--ease)',
+            transform: hov ? 'scale(1.04)' : 'scale(1)',
+            transition: 'transform 0.5s var(--ease)',
           }}
         />
-        {/* Badge */}
+        {/* Gradient overlay — bottom only, subtle */}
         <div style={{
-          position: 'absolute', top: 14, left: 14,
-          background: p.badge === 'New' ? 'var(--color-accent)' : 'var(--color-primary)',
-          color: p.badge === 'New' ? '#1A2B27' : '#fff',
-          fontSize: 11, fontWeight: 700, letterSpacing: '0.04em',
-          padding: '3px 10px',
+          position: 'absolute', bottom: 0, left: 0, right: 0, height: 80,
+          background: 'linear-gradient(to top, rgba(0,0,0,0.30) 0%, transparent 100%)',
+        }} />
+        {/* Next available badge — top right */}
+        <div style={{
+          position: 'absolute', top: 12, right: 12,
+          background: 'rgba(255,255,255,0.94)',
+          backdropFilter: 'blur(8px)',
           borderRadius: 'var(--radius-full)',
-        }}>{p.badge}</div>
+          padding: '5px 11px',
+          display: 'flex', alignItems: 'center', gap: 5,
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+        }}>
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22C55E', flexShrink: 0 }} />
+          <span style={{ fontSize: 11.5, fontWeight: 600, color: '#1A2B27' }}>{p.next}</span>
+        </div>
+        {/* Rating overlay — bottom left */}
+        <div style={{
+          position: 'absolute', bottom: 12, left: 14,
+          display: 'flex', alignItems: 'center', gap: 5,
+        }}>
+          <StarFilled size={13} />
+          <span style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>{p.rating}</span>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)' }}>({p.reviews})</span>
+        </div>
       </div>
 
       {/* Body */}
-      <div style={{ padding: '18px 20px 20px' }}>
-        {/* Provider identity */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+      <div style={{ padding: '16px 18px 18px' }}>
+        {/* Identity row */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
           <img
             src={p.avatar} alt=""
-            style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--color-border-light)', flexShrink: 0 }}
+            style={{ width: 38, height: 38, borderRadius: '50%', objectFit: 'cover', border: '2.5px solid #fff', boxShadow: '0 0 0 1.5px var(--color-border)', flexShrink: 0 }}
           />
-          <div>
-            <p style={{ fontWeight: 700, fontSize: 15, color: 'var(--color-text-primary)', lineHeight: 1.2 }}>{p.name}</p>
-            <p style={{ fontSize: 12.5, color: 'var(--color-text-muted)', marginTop: 2 }}>{p.service}</p>
+          <div style={{ minWidth: 0 }}>
+            <p style={{ fontWeight: 700, fontSize: 15, color: 'var(--color-text-primary)', lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</p>
+            <span style={{ fontSize: 12, color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+              </svg>
+              {p.location}
+            </span>
           </div>
         </div>
 
-        {/* Location + rating row */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: 13, color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', gap: 5 }}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-            </svg>
-            {p.location}
-          </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <StarFilled size={13} />
-            <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)' }}>{p.rating}</span>
-            <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>({p.reviews})</span>
-          </span>
+        {/* Service tags */}
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 14 }}>
+          {p.tags.map((t) => (
+            <span key={t} style={{
+              fontSize: 11, fontWeight: 500,
+              color: 'var(--color-primary)',
+              background: 'rgba(2,65,57,0.07)',
+              borderRadius: 'var(--radius-full)',
+              padding: '3px 9px',
+            }}>{t}</span>
+          ))}
         </div>
 
-        {/* Divider */}
-        <div style={{ borderTop: '1px solid var(--color-border-light)', margin: '14px 0' }} />
-
-        {/* Price + CTA */}
+        {/* Price + Book CTA */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-primary)' }}>{p.price}</span>
+          <div>
+            <span style={{ fontSize: 11, color: 'var(--color-text-muted)', display: 'block' }}>Ab</span>
+            <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--color-primary)', letterSpacing: '-0.02em' }}>{p.price.replace('ab ', '')}</span>
+          </div>
           <button style={{
             background: 'var(--color-primary)', color: '#fff',
             border: 'none', borderRadius: 'var(--radius-full)',
-            padding: '8px 18px', fontSize: 13, fontWeight: 600,
+            padding: '10px 22px', fontSize: 13.5, fontWeight: 600,
             cursor: 'pointer',
-            transition: 'background 0.18s',
+            transition: 'background 0.18s, transform 0.12s',
           }}
             onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-primary-hover)'}
             onMouseLeave={(e) => e.currentTarget.style.background = 'var(--color-primary)'}
+            onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.96)'}
+            onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
           >
             Buchen
           </button>
@@ -918,15 +939,15 @@ const ProviderCard = ({ p }) => {
 };
 
 const FeaturedSection = () => (
-  <section style={{ background: 'var(--color-bg-app)', padding: '80px 0' }}>
+  <section style={{ background: 'var(--color-bg-app)', padding: '88px 0' }}>
     <div style={{ maxWidth: 1440, margin: '0 auto', padding: '0 var(--space-6)' }}>
       <div style={{
         display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between',
-        marginBottom: 36, flexWrap: 'wrap', gap: 12,
+        marginBottom: 40, flexWrap: 'wrap', gap: 12,
       }}>
         <div>
           <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-secondary)', marginBottom: 6 }}>Featured</p>
-          <h2 style={{ fontSize: 'clamp(1.6rem, 3vw, 2.25rem)', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--color-text-primary)', margin: 0 }}>
+          <h2 style={{ fontSize: 'clamp(1.6rem, 3vw, 2.25rem)', fontWeight: 700, letterSpacing: '-0.025em', color: 'var(--color-text-primary)', margin: 0 }}>
             Top Providers Near You
           </h2>
           <p style={{ marginTop: 8, fontSize: 15, color: 'var(--color-text-secondary)' }}>
@@ -939,21 +960,17 @@ const FeaturedSection = () => (
           textDecoration: 'none',
           border: '1.5px solid var(--color-primary)',
           borderRadius: 'var(--radius-full)',
-          padding: '8px 18px',
+          padding: '9px 20px',
           transition: 'all 0.18s',
         }}
           onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-primary)'; e.currentTarget.style.color = '#fff'; }}
           onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-primary)'; }}
         >
-          View All <ArrowRight />
+          Alle anzeigen <ArrowRight />
         </Link>
       </div>
 
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: 24,
-      }} className="providers-grid">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }} className="providers-grid">
         {FEATURED.map((p) => <ProviderCard key={p.name} p={p} />)}
       </div>
     </div>
