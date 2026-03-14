@@ -1199,41 +1199,45 @@ export default function ProviderOnboardingPage() {
       <div style={{
         background: 'var(--color-bg-card)',
         borderBottom: '1px solid var(--color-border-light)',
-        padding: '0 var(--space-8)',
         height: 64,
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         position: 'sticky', top: 0, zIndex: 100,
         boxShadow: 'var(--shadow-xs)',
       }}>
-        <Logo size={30} />
-        <div style={{ flex: 1, maxWidth: 440, margin: '0 40px' }}>
-          <div style={{ height: 5, background: 'var(--color-border-light)', borderRadius: 'var(--radius-full)', overflow: 'hidden' }}>
-            <div style={{
-              height: '100%', width: `${progress}%`,
-              background: 'var(--gradient-brand)',
-              borderRadius: 'var(--radius-full)',
-              transition: 'width 0.5s var(--ease)',
-            }} />
+        {/* Inner container aligned to body maxWidth */}
+        <div style={{
+          maxWidth: 1280, margin: '0 auto', padding: '0 32px',
+          height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        }}>
+          <Logo size={30} />
+          <div style={{ flex: 1, maxWidth: 480, margin: '0 48px' }}>
+            <div style={{ height: 4, background: 'var(--color-border-light)', borderRadius: 'var(--radius-full)', overflow: 'hidden' }}>
+              <div style={{
+                height: '100%', width: `${progress}%`,
+                background: 'var(--gradient-brand)',
+                borderRadius: 'var(--radius-full)',
+                transition: 'width 0.5s var(--ease)',
+              }} />
+            </div>
+            <p style={{ fontSize: 11, color: 'var(--color-text-muted)', marginTop: 6, textAlign: 'center', fontWeight: 500, letterSpacing: '0.01em' }}>
+              Step {step} of {STEPS.length} — <strong style={{ color: 'var(--color-text-secondary)', fontWeight: 600 }}>{stepInfo.label}</strong>
+            </p>
           </div>
-          <p style={{ fontSize: 11, color: 'var(--color-text-muted)', marginTop: 6, textAlign: 'center', fontWeight: 500 }}>
-            Step {step} of {STEPS.length} — {stepInfo.label}
-          </p>
+          <a href="/dashboard" style={{ fontSize: 13, color: 'var(--color-text-muted)', textDecoration: 'none', fontWeight: 500, whiteSpace: 'nowrap' }}>
+            Save &amp; exit
+          </a>
         </div>
-        <a href="/dashboard" style={{ fontSize: 13, color: 'var(--color-text-muted)', textDecoration: 'none', fontWeight: 500 }}>
-          Save &amp; exit
-        </a>
       </div>
 
       {/* ── Body ── */}
       <div style={{
         flex: 1, display: 'flex',
-        padding: '40px 24px', gap: 32,
-        maxWidth: 1060, margin: '0 auto', width: '100%', boxSizing: 'border-box',
+        padding: '48px 32px', gap: 40,
+        maxWidth: 1280, margin: '0 auto', width: '100%', boxSizing: 'border-box',
       }}>
 
         {/* Sidebar */}
-        <div className="onboarding-sidebar" style={{ width: 210, flexShrink: 0 }}>
-          <div style={{ position: 'sticky', top: 84 }}>
+        <div className="onboarding-sidebar" style={{ width: 220, flexShrink: 0 }}>
+          <div style={{ position: 'sticky', top: 80 }}>
             {STEPS.map((s) => {
               const done    = s.id < step;
               const current = s.id === step;
