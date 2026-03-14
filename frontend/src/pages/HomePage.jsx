@@ -693,7 +693,7 @@ const StatsStrip = () => (
 ───────────────────────────────────────────────────────────────── */
 const FEATURED = [
   {
-    name: 'Zara's Braid Studio',
+    name: "Zara's Braid Studio",
     service: 'Braids & Locs',
     location: 'Berlin Mitte',
     rating: 4.9,
