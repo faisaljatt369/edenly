@@ -40,6 +40,31 @@ const Pipe = () => (
 );
 
 /* ── Language Switcher ─────────────────────────────────────────────────── */
+const DashboardIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+    <rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>
+  </svg>
+);
+const UserIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+    <circle cx="12" cy="7" r="4"/>
+  </svg>
+);
+const StoreIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 9l1-5h16l1 5"/><path d="M3 9a2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 0 2 2 2 2 0 0 0 2-2"/>
+    <path d="M5 20h14v-9"/>
+  </svg>
+);
+const LogOutIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+    <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+  </svg>
+);
+
 const GlobeIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="12" r="10"/>
@@ -329,18 +354,21 @@ const Navbar = () => {
                         <span className="badge badge-primary" style={{ marginTop: 6, textTransform: 'capitalize', fontSize: 10 }}>{user?.role}</span>
                       </div>
                       {[
-                        { icon: '📊', label: 'Dashboard', to: '/dashboard' },
-                        { icon: '👤', label: 'My Profile', to: '/profile' },
-                        ...(user?.role === 'provider' ? [{ icon: '🏪', label: 'Business Setup', to: '/onboarding' }] : []),
+                        { icon: <DashboardIcon />, label: 'Dashboard',     to: '/dashboard' },
+                        { icon: <UserIcon />,      label: 'My Profile',    to: '/profile'   },
+                        ...(user?.role === 'provider' ? [{ icon: <StoreIcon />, label: 'Business Setup', to: '/onboarding' }] : []),
                       ].map(({ icon, label, to }) => (
                         <Link key={to} to={to} onClick={() => setDropOpen(false)} style={{
                           display: 'flex', alignItems: 'center', gap: 10,
                           padding: 'var(--space-3) var(--space-4)',
-                          fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)', textDecoration: 'none',
+                          fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)', textDecoration: 'none',
                         }}
                           onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-bg-muted)'}
                           onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                        ><span>{icon}</span>{label}</Link>
+                        >
+                          <span style={{ color: 'var(--color-text-muted)', display: 'flex' }}>{icon}</span>
+                          {label}
+                        </Link>
                       ))}
                       <div style={{ borderTop: '1px solid var(--color-border-light)' }}>
                         <button onClick={handleLogout} style={{
@@ -351,7 +379,10 @@ const Navbar = () => {
                         }}
                           onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(235,87,87,0.05)'}
                           onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                        ><span>🚪</span> Sign out</button>
+                        >
+                          <span style={{ display: 'flex' }}><LogOutIcon /></span>
+                          Sign out
+                        </button>
                       </div>
                     </div>
                   )}
