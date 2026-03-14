@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -34,8 +34,12 @@ const Icons = {
   services: () => <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>,
   messages: () => <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
   reports:  () => <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>,
-  discover: () => <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
-  settings: () => <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>,
+  discover:     () => <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
+  payouts:      () => <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>,
+  transactions: () => <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>,
+  subscription: () => <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>,
+  invoices:     () => <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>,
+  settings:     () => <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>,
   logout:   () => <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>,
   bell:     () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>,
   menu:     () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="15" y2="18"/></svg>,
@@ -58,6 +62,14 @@ export const PROVIDER_NAV = [
     ],
   },
   {
+    section: 'Finance',
+    items: [
+      { id: 'payouts',       label: 'Payouts',       path: '/dashboard/payouts',       icon: 'payouts'      },
+      { id: 'transactions',  label: 'Transactions',  path: '/dashboard/transactions',  icon: 'transactions' },
+      { id: 'subscription',  label: 'Subscription',  path: '/dashboard/subscription',  icon: 'subscription' },
+    ],
+  },
+  {
     section: 'Insights',
     items: [
       { id: 'messages', label: 'Messages',  path: '/dashboard/messages', icon: 'messages' },
@@ -74,6 +86,13 @@ export const CUSTOMER_NAV = [
       { id: 'bookings', label: 'My Bookings', path: '/dashboard/bookings', icon: 'bookings' },
       { id: 'discover', label: 'Discover',    path: '/dashboard/discover', icon: 'discover' },
       { id: 'messages', label: 'Messages',    path: '/dashboard/messages', icon: 'messages' },
+    ],
+  },
+  {
+    section: 'Finance',
+    items: [
+      { id: 'invoices',     label: 'Invoices',     path: '/dashboard/invoices',     icon: 'invoices'     },
+      { id: 'transactions', label: 'Transactions', path: '/dashboard/transactions', icon: 'transactions' },
     ],
   },
 ];
@@ -158,41 +177,17 @@ export default function DashboardLayout({ navItems = [], pageTitle, pageTitleMap
   const initials = `${user?.first_name?.[0] || ''}${user?.last_name?.[0] || ''}`.toUpperCase() || '?';
   const fullName  = `${user?.first_name || ''} ${user?.last_name || ''}`.trim();
 
+  /* ── Dynamic page title in browser tab ── */
+  useEffect(() => {
+    document.title = resolvedTitle ? `${resolvedTitle} · Edenly` : 'Edenly';
+  }, [resolvedTitle]);
+
   /* ── Sidebar inner content ── */
   const sidebarContent = (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: S.bg }}>
 
-      {/* ── Logo ── */}
-      <div style={{ padding: '22px 20px 18px', flexShrink: 0 }}>
-        <Link to="/dashboard" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
-          {/* Brand mark */}
-          <div style={{
-            width: 34, height: 34, borderRadius: 10, flexShrink: 0,
-            background: 'linear-gradient(135deg, #024139 0%, #0A544A 60%, #49A96C 100%)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 2px 10px rgba(73,169,108,0.35)',
-          }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path d="M12 3L4 8v8l8 5 8-5V8z" stroke="#fff" strokeWidth="1.6" strokeLinejoin="round"/>
-              <path d="M12 3v13M4 8l8 5 8-5" stroke="rgba(255,255,255,0.55)" strokeWidth="1.2" strokeLinejoin="round"/>
-            </svg>
-          </div>
-          <div>
-            <p style={{ fontSize: 17, fontWeight: 800, color: '#fff', letterSpacing: '-0.04em', lineHeight: 1 }}>
-              edenly
-            </p>
-            <p style={{ fontSize: 9.5, color: '#475569', fontWeight: 600, letterSpacing: '0.07em', textTransform: 'uppercase', lineHeight: 1, marginTop: 2 }}>
-              {user?.role === 'provider' ? 'Business' : 'Customer'}
-            </p>
-          </div>
-        </Link>
-      </div>
-
-      {/* ── Divider ── */}
-      <div style={{ height: 1, background: S.divider, margin: '0 14px 12px' }} />
-
       {/* ── Nav sections ── */}
-      <nav style={{ flex: 1, overflowY: 'auto', padding: '0 10px', scrollbarWidth: 'none' }}>
+      <nav style={{ flex: 1, overflowY: 'auto', padding: '18px 10px 0', scrollbarWidth: 'none' }}>
         {navItems.map((group, gi) => (
           <div key={gi} style={{ marginBottom: 20 }}>
             {/* Section label */}
@@ -351,6 +346,14 @@ export default function DashboardLayout({ navItems = [], pageTitle, pageTitleMap
           }}>
             <Icons.menu />
           </button>
+
+          {/* Logo */}
+          <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', flexShrink: 0, textDecoration: 'none' }}>
+            <img src="/logo.svg" alt="Edenly" style={{ height: 28, width: 'auto', display: 'block' }} />
+          </Link>
+
+          {/* Divider between logo and page title */}
+          <div style={{ width: 1, height: 20, background: '#E2E8F0', flexShrink: 0 }} />
 
           {/* Page title */}
           <h1 style={{ fontSize: 15.5, fontWeight: 700, color: '#0F172A', letterSpacing: '-0.02em', flex: 1 }}>

@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { Routes, Route, Navigate, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import DashboardLayout, { PROVIDER_NAV, CUSTOMER_NAV } from '../../components/layout/DashboardLayout';
@@ -878,18 +879,443 @@ const CustomerSettings = () => {
 };
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   Shared finance helpers
+───────────────────────────────────────────────────────────────────────────── */
+const Badge = ({ label, color = '#64748B', bg }) => (
+  <span style={{
+    display: 'inline-flex', alignItems: 'center',
+    padding: '3px 10px', borderRadius: 20,
+    fontSize: 11.5, fontWeight: 600,
+    color, background: bg || `${color}18`,
+  }}>{label}</span>
+);
+
+const StatusBadge = ({ status }) => {
+  const map = {
+    completed:  { label: 'Completed',  color: '#16a34a', bg: '#dcfce7' },
+    paid:       { label: 'Paid',       color: '#16a34a', bg: '#dcfce7' },
+    pending:    { label: 'Pending',    color: '#d97706', bg: '#fef3c7' },
+    processing: { label: 'Processing', color: '#2563eb', bg: '#dbeafe' },
+    failed:     { label: 'Failed',     color: '#dc2626', bg: '#fee2e2' },
+    refunded:   { label: 'Refunded',   color: '#7c3aed', bg: '#ede9fe' },
+    active:     { label: 'Active',     color: '#16a34a', bg: '#dcfce7' },
+    cancelled:  { label: 'Cancelled',  color: '#dc2626', bg: '#fee2e2' },
+  };
+  const s = map[status?.toLowerCase()] || { label: status, color: '#64748B', bg: '#F1F5F9' };
+  return <Badge label={s.label} color={s.color} bg={s.bg} />;
+};
+
+const TableHeader = ({ cols }) => (
+  <thead>
+    <tr style={{ borderBottom: '1px solid var(--color-border-light)' }}>
+      {cols.map((col) => (
+        <th key={col} style={{
+          padding: '11px 16px', textAlign: 'left',
+          fontSize: 11, fontWeight: 700, letterSpacing: '0.07em',
+          textTransform: 'uppercase', color: 'var(--color-text-muted)',
+          whiteSpace: 'nowrap',
+        }}>{col}</th>
+      ))}
+    </tr>
+  </thead>
+);
+
+const FilterTabs = ({ tabs, active, onSelect }) => (
+  <div style={{ display: 'flex', gap: 4, padding: '4px', background: '#F1F5F9', borderRadius: 10, width: 'fit-content' }}>
+    {tabs.map((tab) => (
+      <button key={tab} onClick={() => onSelect(tab)} style={{
+        padding: '6px 16px', borderRadius: 8, border: 'none', cursor: 'pointer',
+        fontSize: 12.5, fontWeight: 600, transition: 'all 0.14s',
+        background: active === tab ? '#fff' : 'transparent',
+        color: active === tab ? 'var(--color-text-primary)' : 'var(--color-text-muted)',
+        boxShadow: active === tab ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
+      }}>{tab}</button>
+    ))}
+  </div>
+);
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PROVIDER — Payouts
+───────────────────────────────────────────────────────────────────────────── */
+const ProviderPayouts = () => {
+  const [tab, setTab] = useState('All');
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+        <div>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-text-primary)', letterSpacing: '-0.03em' }}>Payouts</h2>
+          <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginTop: 3 }}>Track your earnings and payout history</p>
+        </div>
+        <button className="btn btn-primary" style={{ fontSize: 13 }}>Request Payout</button>
+      </div>
+
+      {/* Stats */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+        <StatCard label="Total Earned" value="€0.00" sub="All time" icon={<EuroSvg />} accent="var(--color-primary)" />
+        <StatCard label="Pending Payout" value="€0.00" sub="Processing in 2–5 days" icon={
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        } accent="#F59E0B" />
+        <StatCard label="Last Payout" value="—" sub="No payouts yet" icon={
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        } accent="var(--color-secondary)" />
+      </div>
+
+      {/* Bank account alert */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '14px 20px', borderRadius: 12,
+        background: 'rgba(2,65,57,0.06)', border: '1px solid rgba(2,65,57,0.12)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ width: 36, height: 36, borderRadius: 9, background: 'rgba(2,65,57,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary)', flexShrink: 0 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          </div>
+          <div>
+            <p style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--color-text-primary)' }}>Connect your bank account</p>
+            <p style={{ fontSize: 12, color: 'var(--color-text-muted)', marginTop: 1 }}>Add a bank account to receive payouts from your bookings</p>
+          </div>
+        </div>
+        <button className="btn btn-primary" style={{ fontSize: 12.5, padding: '8px 16px' }}>Connect Bank</button>
+      </div>
+
+      {/* Payout history */}
+      <Card>
+        <div style={{ padding: '16px 22px', borderBottom: '1px solid var(--color-border-light)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text-primary)' }}>Payout History</p>
+          <FilterTabs tabs={['All', 'Pending', 'Completed', 'Failed']} active={tab} onSelect={setTab} />
+        </div>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <TableHeader cols={['Date', 'Reference', 'Bank Account', 'Amount', 'Status']} />
+          <tbody>
+            <tr>
+              <td colSpan={5}>
+                <EmptyState
+                  icon={<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>}
+                  title="No payouts yet"
+                  description="Once you receive bookings and enable payouts, your payout history will appear here."
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </Card>
+    </div>
+  );
+};
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PROVIDER — Transactions
+───────────────────────────────────────────────────────────────────────────── */
+const ProviderTransactions = () => {
+  const [tab, setTab] = useState('All');
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+        <div>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-text-primary)', letterSpacing: '-0.03em' }}>Transactions</h2>
+          <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginTop: 3 }}>All service order payments and revenue</p>
+        </div>
+        <button style={{
+          display: 'flex', alignItems: 'center', gap: 6,
+          padding: '9px 16px', borderRadius: 9, border: '1.5px solid var(--color-border)',
+          background: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600,
+          color: 'var(--color-text-primary)',
+        }}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export CSV
+        </button>
+      </div>
+
+      {/* Stats */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+        <StatCard label="Total Revenue" value="€0.00" sub="All time" icon={<EuroSvg />} accent="var(--color-primary)" />
+        <StatCard label="This Month" value="€0.00" sub="March 2026" icon={<CalSvg />} accent="var(--color-secondary)" />
+        <StatCard label="Avg. Transaction" value="—" sub="No data yet" icon={<ChartSvg />} accent="#7C3AED" />
+      </div>
+
+      {/* Table */}
+      <Card>
+        <div style={{ padding: '16px 22px', borderBottom: '1px solid var(--color-border-light)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text-primary)' }}>Transaction History</p>
+          <FilterTabs tabs={['All', 'Completed', 'Pending', 'Refunded']} active={tab} onSelect={setTab} />
+        </div>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <TableHeader cols={['Date', 'Client', 'Service', 'Gross', 'Platform Fee', 'Net', 'Status']} />
+          <tbody>
+            <tr>
+              <td colSpan={7}>
+                <EmptyState
+                  icon={<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>}
+                  title="No transactions yet"
+                  description="Service order transactions will appear here once clients start booking your services."
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </Card>
+    </div>
+  );
+};
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PROVIDER — Subscription
+───────────────────────────────────────────────────────────────────────────── */
+const ProviderSubscription = () => {
+  const plans = [
+    {
+      name: 'Free',
+      price: '€0',
+      period: 'forever',
+      current: true,
+      color: '#64748B',
+      features: ['Up to 30 bookings/mo', '1 staff member', 'Basic calendar', 'Client management', 'Email support'],
+    },
+    {
+      name: 'Starter',
+      price: '€29',
+      period: '/month',
+      current: false,
+      color: 'var(--color-secondary)',
+      recommended: false,
+      features: ['Up to 200 bookings/mo', 'Up to 3 staff', 'Advanced calendar', 'Automated reminders', 'Reports & analytics', 'Priority support'],
+    },
+    {
+      name: 'Pro',
+      price: '€79',
+      period: '/month',
+      current: false,
+      color: '#7C3AED',
+      recommended: true,
+      features: ['Unlimited bookings', 'Unlimited staff', 'Custom branding', 'Online payments', 'Advanced reports', 'API access', 'Dedicated support'],
+    },
+  ];
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
+      <div>
+        <h2 style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-text-primary)', letterSpacing: '-0.03em' }}>Subscription</h2>
+        <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginTop: 3 }}>Manage your plan and billing</p>
+      </div>
+
+      {/* Current plan banner */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '18px 24px', borderRadius: 14,
+        background: 'linear-gradient(135deg, #024139 0%, #0A544A 60%, #49A96C 100%)',
+        color: '#fff',
+      }}>
+        <div>
+          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', opacity: 0.7, marginBottom: 4 }}>Current Plan</p>
+          <p style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.03em' }}>Free Plan</p>
+          <p style={{ fontSize: 12.5, opacity: 0.75, marginTop: 2 }}>30 bookings/month · 1 staff member</p>
+        </div>
+        <button style={{
+          background: 'rgba(255,255,255,0.18)', border: '1.5px solid rgba(255,255,255,0.35)',
+          color: '#fff', padding: '9px 20px', borderRadius: 9,
+          fontSize: 13, fontWeight: 600, cursor: 'pointer',
+          backdropFilter: 'blur(4px)',
+        }}>
+          Upgrade Plan
+        </button>
+      </div>
+
+      {/* Plans */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+        {plans.map((plan) => (
+          <div key={plan.name} style={{
+            background: '#fff', borderRadius: 14, overflow: 'hidden',
+            border: plan.recommended ? '2px solid #7C3AED' : '1px solid var(--color-border-light)',
+            boxShadow: plan.recommended ? '0 4px 20px rgba(124,58,237,0.12)' : '0 1px 4px rgba(2,65,57,0.05)',
+            position: 'relative',
+          }}>
+            {plan.recommended && (
+              <div style={{
+                background: '#7C3AED', color: '#fff', textAlign: 'center',
+                padding: '5px', fontSize: 10.5, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
+              }}>
+                Most Popular
+              </div>
+            )}
+            <div style={{ padding: '22px 22px 20px' }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: plan.color, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 8 }}>{plan.name}</p>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 2, marginBottom: 4 }}>
+                <span style={{ fontSize: 28, fontWeight: 800, color: 'var(--color-text-primary)', letterSpacing: '-0.04em' }}>{plan.price}</span>
+                <span style={{ fontSize: 12.5, color: 'var(--color-text-muted)', fontWeight: 500 }}>{plan.period}</span>
+              </div>
+              <div style={{ height: 1, background: 'var(--color-border-light)', margin: '16px 0' }} />
+              <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 20 }}>
+                {plan.features.map((f) => (
+                  <li key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--color-text-secondary)' }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={plan.color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              {plan.current ? (
+                <div style={{ padding: '9px', textAlign: 'center', borderRadius: 9, background: '#F1F5F9', fontSize: 12.5, fontWeight: 600, color: 'var(--color-text-muted)' }}>
+                  Current Plan
+                </div>
+              ) : (
+                <button style={{
+                  width: '100%', padding: '10px', borderRadius: 9, border: 'none', cursor: 'pointer',
+                  background: plan.recommended ? '#7C3AED' : 'var(--color-primary)',
+                  color: '#fff', fontSize: 13, fontWeight: 600, transition: 'opacity 0.14s',
+                }}>
+                  Upgrade to {plan.name}
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Billing history */}
+      <Card>
+        <CardHeader title="Billing History" />
+        <EmptyState
+          icon={<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>}
+          title="No billing history"
+          description="Invoices and receipts for your subscription will appear here."
+        />
+      </Card>
+    </div>
+  );
+};
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   CUSTOMER — Invoices
+───────────────────────────────────────────────────────────────────────────── */
+const CustomerInvoices = () => {
+  const [tab, setTab] = useState('All');
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+        <div>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-text-primary)', letterSpacing: '-0.03em' }}>Invoices</h2>
+          <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginTop: 3 }}>View and download your service invoices</p>
+        </div>
+        <button style={{
+          display: 'flex', alignItems: 'center', gap: 6,
+          padding: '9px 16px', borderRadius: 9, border: '1.5px solid var(--color-border)',
+          background: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600,
+          color: 'var(--color-text-primary)',
+        }}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download All
+        </button>
+      </div>
+
+      {/* Stats */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+        <StatCard label="Total Spent" value="€0.00" sub="All time" icon={<EuroSvg />} accent="var(--color-primary)" />
+        <StatCard label="Paid Invoices" value="0" sub="Successfully paid" icon={<BookSvg />} accent="var(--color-secondary)" />
+        <StatCard label="Pending" value="0" sub="Awaiting payment" icon={
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        } accent="#F59E0B" />
+      </div>
+
+      {/* Invoices table */}
+      <Card>
+        <div style={{ padding: '16px 22px', borderBottom: '1px solid var(--color-border-light)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text-primary)' }}>Invoice History</p>
+          <FilterTabs tabs={['All', 'Paid', 'Pending']} active={tab} onSelect={setTab} />
+        </div>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <TableHeader cols={['Invoice #', 'Provider', 'Service', 'Date', 'Amount', 'Status', '']} />
+          <tbody>
+            <tr>
+              <td colSpan={7}>
+                <EmptyState
+                  icon={<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>}
+                  title="No invoices yet"
+                  description="After you book and pay for services, your invoices will appear here for download."
+                  action={
+                    <Link to="/dashboard/discover" className="btn btn-primary" style={{ fontSize: 13 }}>
+                      Discover services
+                    </Link>
+                  }
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </Card>
+    </div>
+  );
+};
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   CUSTOMER — Transactions
+───────────────────────────────────────────────────────────────────────────── */
+const CustomerTransactions = () => {
+  const [tab, setTab] = useState('All');
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <div>
+        <h2 style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-text-primary)', letterSpacing: '-0.03em' }}>Transactions</h2>
+        <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginTop: 3 }}>Your payment history for service orders</p>
+      </div>
+
+      {/* Stats */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+        <StatCard label="Total Spent" value="€0.00" sub="All time" icon={<EuroSvg />} accent="var(--color-primary)" />
+        <StatCard label="This Month" value="€0.00" sub="March 2026" icon={<CalSvg />} accent="var(--color-secondary)" />
+        <StatCard label="Bookings Paid" value="0" sub="Total services paid" icon={<BookSvg />} accent="#7C3AED" />
+      </div>
+
+      {/* Transactions table */}
+      <Card>
+        <div style={{ padding: '16px 22px', borderBottom: '1px solid var(--color-border-light)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text-primary)' }}>Payment History</p>
+          <FilterTabs tabs={['All', 'Completed', 'Pending', 'Refunded']} active={tab} onSelect={setTab} />
+        </div>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <TableHeader cols={['Date', 'Description', 'Provider', 'Payment Method', 'Amount', 'Status']} />
+          <tbody>
+            <tr>
+              <td colSpan={6}>
+                <EmptyState
+                  icon={<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>}
+                  title="No transactions yet"
+                  description="Payment transactions for your service bookings will appear here."
+                  action={
+                    <Link to="/dashboard/discover" className="btn btn-primary" style={{ fontSize: 13 }}>
+                      Book a service
+                    </Link>
+                  }
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </Card>
+    </div>
+  );
+};
+
+/* ─────────────────────────────────────────────────────────────────────────────
    Page title map (for top bar)
 ───────────────────────────────────────────────────────────────────────────── */
 const PAGE_TITLES = {
-  '/dashboard':           'Home',
-  '/dashboard/calendar':  'Calendar',
-  '/dashboard/bookings':  'Bookings',
-  '/dashboard/clients':   'Clients',
-  '/dashboard/services':  'Services',
-  '/dashboard/messages':  'Messages',
-  '/dashboard/reports':   'Reports',
-  '/dashboard/discover':  'Discover',
-  '/dashboard/settings':  'Settings',
+  '/dashboard':                'Home',
+  '/dashboard/calendar':       'Calendar',
+  '/dashboard/bookings':       'Bookings',
+  '/dashboard/clients':        'Clients',
+  '/dashboard/services':       'Services',
+  '/dashboard/payouts':        'Payouts',
+  '/dashboard/transactions':   'Transactions',
+  '/dashboard/subscription':   'Subscription',
+  '/dashboard/invoices':       'Invoices',
+  '/dashboard/messages':       'Messages',
+  '/dashboard/reports':        'Reports',
+  '/dashboard/discover':       'Discover',
+  '/dashboard/settings':       'Settings',
 };
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -910,6 +1336,9 @@ export default function DashboardPage() {
             <Route path="bookings"        element={<ProviderBookings />} />
             <Route path="clients"         element={<ProviderClients />} />
             <Route path="services"        element={<ProviderServices />} />
+            <Route path="payouts"         element={<ProviderPayouts />} />
+            <Route path="transactions"    element={<ProviderTransactions />} />
+            <Route path="subscription"    element={<ProviderSubscription />} />
             <Route path="messages"        element={<ProviderMessages />} />
             <Route path="reports"         element={<ProviderReports />} />
             <Route path="settings"        element={<ProviderSettings />} />
@@ -919,6 +1348,8 @@ export default function DashboardPage() {
             <Route index                  element={<CustomerHome user={user} />} />
             <Route path="bookings"        element={<CustomerBookings />} />
             <Route path="discover"        element={<CustomerDiscover />} />
+            <Route path="invoices"        element={<CustomerInvoices />} />
+            <Route path="transactions"    element={<CustomerTransactions />} />
             <Route path="messages"        element={<CustomerMessages />} />
             <Route path="settings"        element={<CustomerSettings />} />
           </>
