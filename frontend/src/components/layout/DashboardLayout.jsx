@@ -330,7 +330,7 @@ export default function DashboardLayout({ navItems = [], pageTitle, pageTitleMap
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
 
         {/* ── Top bar ── */}
-        <div style={{
+        <div className="db-topbar" style={{
           height: 60, background: '#fff',
           borderBottom: '1px solid #E8EEF2',
           display: 'flex', alignItems: 'center',
@@ -353,10 +353,10 @@ export default function DashboardLayout({ navItems = [], pageTitle, pageTitleMap
           </Link>
 
           {/* Divider between logo and page title */}
-          <div style={{ width: 1, height: 20, background: '#E2E8F0', flexShrink: 0 }} />
+          <div className="db-logo-div" style={{ width: 1, height: 20, background: '#E2E8F0', flexShrink: 0 }} />
 
           {/* Page title */}
-          <h1 style={{ fontSize: 15.5, fontWeight: 700, color: '#0F172A', letterSpacing: '-0.02em', flex: 1 }}>
+          <h1 className="db-page-title" style={{ fontSize: 15.5, fontWeight: 700, color: '#0F172A', letterSpacing: '-0.02em', flex: 1, minWidth: 0, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
             {resolvedTitle}
           </h1>
 
@@ -401,18 +401,69 @@ export default function DashboardLayout({ navItems = [], pageTitle, pageTitleMap
         </div>
 
         {/* ── Page content ── */}
-        <main style={{ flex: 1, padding: '28px 32px', overflowY: 'auto' }}>
+        <main className="db-main" style={{ flex: 1, padding: '28px 32px', overflowY: 'auto' }}>
           {children}
         </main>
       </div>
 
       {/* Responsive */}
       <style>{`
+        /* ── Sidebar / topbar ── */
         @media (max-width: 768px) {
           .db-sidebar  { display: none !important; }
           .db-menu-btn { display: flex !important; }
+          .db-topbar   { padding: 0 14px !important; gap: 10px !important; }
+          .db-logo-div { display: none !important; }
+          .db-page-title { font-size: 14px !important; }
+          .db-main     { padding: 16px !important; }
         }
         nav::-webkit-scrollbar { display: none; }
+
+        /* ── Responsive grid utilities ── */
+        .db-grid-4       { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+        .db-grid-3       { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+        .db-grid-2       { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; }
+        .db-grid-form    { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .db-grid-aside-lg{ display: grid; grid-template-columns: 1fr 380px; gap: 20px; align-items: start; }
+        .db-grid-aside-md{ display: grid; grid-template-columns: 1fr 360px; gap: 20px; align-items: start; }
+        .db-grid-settings{ display: grid; grid-template-columns: 200px 1fr; gap: 24px; align-items: start; }
+        .db-grid-plans   { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+        .db-grid-providers{ display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+        .db-grid-charts  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+        /* ── Layout helpers ── */
+        .db-table-wrap   { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .db-page-hd      { display: flex; align-items: flex-start; justify-content: space-between; }
+        .db-msg-list     { width: 300px; flex-shrink: 0; border-right: 1px solid var(--color-border-light); display: flex; flex-direction: column; }
+        .db-cal-scroll   { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+        /* ── 1024px – tablet landscape ── */
+        @media (max-width: 1024px) {
+          .db-grid-4        { grid-template-columns: repeat(2,1fr); }
+          .db-grid-aside-lg { grid-template-columns: 1fr; }
+          .db-grid-aside-md { grid-template-columns: 1fr; }
+          .db-grid-settings { grid-template-columns: 1fr; }
+          .db-grid-plans    { grid-template-columns: repeat(2,1fr); }
+          .db-grid-providers{ grid-template-columns: repeat(2,1fr); }
+        }
+
+        /* ── 640px – mobile ── */
+        @media (max-width: 640px) {
+          .db-grid-3        { grid-template-columns: repeat(2,1fr); }
+          .db-grid-charts   { grid-template-columns: 1fr; }
+          .db-grid-plans    { grid-template-columns: 1fr; }
+          .db-grid-providers{ grid-template-columns: 1fr; }
+          .db-page-hd       { flex-direction: column; gap: 12px; align-items: flex-start; }
+          .db-msg-list      { display: none; }
+        }
+
+        /* ── 480px – small phone ── */
+        @media (max-width: 480px) {
+          .db-grid-4   { grid-template-columns: 1fr; }
+          .db-grid-3   { grid-template-columns: 1fr; }
+          .db-grid-2   { grid-template-columns: 1fr; }
+          .db-grid-form{ grid-template-columns: 1fr; }
+        }
       `}</style>
     </div>
   );

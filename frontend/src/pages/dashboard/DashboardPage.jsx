@@ -136,7 +136,7 @@ const ProviderHome = ({ user }) => {
       </div>
 
       {/* Stats row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+      <div className="db-grid-4">
         <StatCard label="Today's Bookings" value="0" sub="No appointments yet" icon={<CalSvg />} accent="var(--color-primary)" />
         <StatCard label="Revenue (week)" value="€0" sub="No transactions yet" icon={<EuroSvg />} accent="var(--color-secondary)" />
         <StatCard label="Total Clients" value="0" sub="Grow your client base" icon={<UsersSvg />} accent="#7C3AED" />
@@ -144,7 +144,7 @@ const ProviderHome = ({ user }) => {
       </div>
 
       {/* Two-column row */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 20, alignItems: 'start' }}>
+      <div className="db-grid-aside-lg">
 
         {/* Upcoming appointments */}
         <Card>
@@ -237,7 +237,7 @@ const ProviderHome = ({ user }) => {
 
 const ProviderCalendar = () => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+    <div className="db-page-hd">
       <div>
         <h2 style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-text-primary)', letterSpacing: '-0.03em' }}>Calendar</h2>
         <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginTop: 2 }}>Manage your schedule and availability</p>
@@ -274,7 +274,7 @@ const ProviderCalendar = () => (
       </div>
 
       {/* Calendar grid placeholder */}
-      <div style={{ padding: 0 }}>
+      <div className="db-cal-scroll" style={{ padding: 0, minWidth: 0 }}>
         {/* Day headers */}
         <div style={{ display: 'grid', gridTemplateColumns: '60px repeat(7, 1fr)', borderBottom: '1px solid var(--color-border-light)' }}>
           <div style={{ padding: '10px 0' }} />
@@ -316,7 +316,7 @@ const ProviderCalendar = () => (
 
 const ProviderBookings = () => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+    <div className="db-page-hd">
       <div>
         <h2 style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-text-primary)', letterSpacing: '-0.03em' }}>Bookings</h2>
         <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginTop: 2 }}>Track and manage all your appointments</p>
@@ -355,7 +355,7 @@ const ProviderBookings = () => (
 
 const ProviderClients = () => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+    <div className="db-page-hd">
       <div>
         <h2 style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-text-primary)', letterSpacing: '-0.03em' }}>Clients</h2>
         <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginTop: 2 }}>Your client base and booking history</p>
@@ -388,7 +388,7 @@ const ProviderClients = () => (
 
 const ProviderServices = () => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+    <div className="db-page-hd">
       <div>
         <h2 style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-text-primary)', letterSpacing: '-0.03em' }}>Services</h2>
         <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginTop: 2 }}>Manage what you offer and your pricing</p>
@@ -419,7 +419,7 @@ const ProviderMessages = () => (
     </div>
     <div style={{ display: 'flex', gap: 0, flex: 1, overflow: 'hidden', background: '#fff', border: '1px solid var(--color-border-light)', borderRadius: 14, boxShadow: '0 1px 4px rgba(2,65,57,0.05)' }}>
       {/* Conversation list */}
-      <div style={{ width: 300, borderRight: '1px solid var(--color-border-light)', display: 'flex', flexDirection: 'column' }}>
+      <div className="db-msg-list">
         <div style={{ padding: '16px', borderBottom: '1px solid var(--color-border-light)' }}>
           <input placeholder="Search messages…" style={{
             width: '100%', padding: '9px 13px',
@@ -451,7 +451,7 @@ const ProviderReports = () => (
     </div>
 
     {/* Period selector */}
-    <div style={{ display: 'flex', gap: 6 }}>
+    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
       {['This week', 'This month', 'Last 3 months', 'This year'].map((p, i) => (
         <button key={p} style={{
           padding: '7px 14px', borderRadius: 8, border: '1.5px solid',
@@ -465,13 +465,13 @@ const ProviderReports = () => (
       ))}
     </div>
 
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+    <div className="db-grid-3">
       <StatCard label="Total Revenue" value="€0" sub="This month" icon={<EuroSvg />} accent="var(--color-secondary)" />
       <StatCard label="Total Bookings" value="0" sub="This month" icon={<CalSvg />} accent="var(--color-primary)" />
       <StatCard label="New Clients" value="0" sub="This month" icon={<UsersSvg />} accent="#7C3AED" />
     </div>
 
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+    <div className="db-grid-charts">
       <Card>
         <CardHeader title="Revenue Over Time" />
         <div style={{ padding: 24, display: 'flex', alignItems: 'flex-end', gap: 8, height: 160 }}>
@@ -501,7 +501,7 @@ const ProviderSettings = () => {
         <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginTop: 2 }}>Manage your account and business preferences</p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: 24, alignItems: 'start' }}>
+      <div className="db-grid-settings">
         {/* Settings tabs */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {['Profile', 'Business', 'Notifications', 'Payments', 'Privacy', 'Password'].map((tab, i) => (
@@ -543,7 +543,7 @@ const ProviderSettings = () => {
             </div>
 
             {/* Form fields */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            <div className="db-grid-form">
               {[
                 { label: 'First name', value: user?.first_name || '' },
                 { label: 'Last name',  value: user?.last_name  || '' },
@@ -602,14 +602,14 @@ const CustomerHome = ({ user }) => {
       </div>
 
       {/* Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+      <div className="db-grid-3">
         <StatCard label="Upcoming Bookings" value="0" sub="No bookings scheduled" icon={<CalSvg />} accent="var(--color-primary)" />
         <StatCard label="Past Appointments" value="0" sub="Build your history" icon={<BookSvg />} accent="var(--color-secondary)" />
         <StatCard label="Favourite Providers" value="0" sub="Save your favourites" icon={<StarSvg />} accent="#F59E0B" />
       </div>
 
       {/* Two columns */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 20, alignItems: 'start' }}>
+      <div className="db-grid-aside-md">
 
         {/* Upcoming booking */}
         <Card>
@@ -753,7 +753,7 @@ const CustomerDiscover = () => (
     </div>
 
     {/* Provider grid placeholder */}
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+    <div className="db-grid-providers">
       {Array.from({ length: 6 }).map((_, i) => (
         <div key={i} style={{
           background: '#fff', border: '1px solid var(--color-border-light)',
@@ -801,7 +801,7 @@ const CustomerMessages = () => (
       <h2 style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-text-primary)', letterSpacing: '-0.03em' }}>Messages</h2>
     </div>
     <div style={{ display: 'flex', gap: 0, flex: 1, overflow: 'hidden', background: '#fff', border: '1px solid var(--color-border-light)', borderRadius: 14, boxShadow: '0 1px 4px rgba(2,65,57,0.05)' }}>
-      <div style={{ width: 300, borderRight: '1px solid var(--color-border-light)', display: 'flex', flexDirection: 'column' }}>
+      <div className="db-msg-list">
         <div style={{ padding: 16, borderBottom: '1px solid var(--color-border-light)' }}>
           <input placeholder="Search conversations…" style={{
             width: '100%', padding: '9px 13px', border: '1.5px solid var(--color-border)',
@@ -827,7 +827,7 @@ const CustomerSettings = () => {
         <h2 style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-text-primary)', letterSpacing: '-0.03em' }}>Settings</h2>
         <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginTop: 2 }}>Manage your account preferences</p>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: 24, alignItems: 'start' }}>
+      <div className="db-grid-settings">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {['Profile', 'Notifications', 'Privacy', 'Payment Methods', 'Password'].map((tab, i) => (
             <button key={tab} style={{
@@ -856,7 +856,7 @@ const CustomerSettings = () => {
                 Change photo
               </button>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            <div className="db-grid-form">
               {[{ label: 'First name', value: user?.first_name || '' }, { label: 'Last name', value: user?.last_name || '' }].map(({ label, value }) => (
                 <div key={label} style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
                   <label style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--color-text-primary)' }}>{label}</label>
@@ -943,7 +943,7 @@ const ProviderPayouts = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+      <div className="db-page-hd">
         <div>
           <h2 style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-text-primary)', letterSpacing: '-0.03em' }}>Payouts</h2>
           <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginTop: 3 }}>Track your earnings and payout history</p>
@@ -952,7 +952,7 @@ const ProviderPayouts = () => {
       </div>
 
       {/* Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+      <div className="db-grid-3">
         <StatCard label="Total Earned" value="€0.00" sub="All time" icon={<EuroSvg />} accent="var(--color-primary)" />
         <StatCard label="Pending Payout" value="€0.00" sub="Processing in 2–5 days" icon={
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -965,6 +965,7 @@ const ProviderPayouts = () => {
       {/* Bank account alert */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        flexWrap: 'wrap', gap: 12,
         padding: '14px 20px', borderRadius: 12,
         background: 'rgba(2,65,57,0.06)', border: '1px solid rgba(2,65,57,0.12)',
       }}>
@@ -982,24 +983,26 @@ const ProviderPayouts = () => {
 
       {/* Payout history */}
       <Card>
-        <div style={{ padding: '16px 22px', borderBottom: '1px solid var(--color-border-light)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ padding: '16px 22px', borderBottom: '1px solid var(--color-border-light)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
           <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text-primary)' }}>Payout History</p>
           <FilterTabs tabs={['All', 'Pending', 'Completed', 'Failed']} active={tab} onSelect={setTab} />
         </div>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <TableHeader cols={['Date', 'Reference', 'Bank Account', 'Amount', 'Status']} />
-          <tbody>
-            <tr>
-              <td colSpan={5}>
-                <EmptyState
-                  icon={<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>}
-                  title="No payouts yet"
-                  description="Once you receive bookings and enable payouts, your payout history will appear here."
-                />
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div className="db-table-wrap">
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 480 }}>
+            <TableHeader cols={['Date', 'Reference', 'Bank Account', 'Amount', 'Status']} />
+            <tbody>
+              <tr>
+                <td colSpan={5}>
+                  <EmptyState
+                    icon={<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>}
+                    title="No payouts yet"
+                    description="Once you receive bookings and enable payouts, your payout history will appear here."
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </Card>
     </div>
   );
@@ -1013,7 +1016,7 @@ const ProviderTransactions = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+      <div className="db-page-hd">
         <div>
           <h2 style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-text-primary)', letterSpacing: '-0.03em' }}>Transactions</h2>
           <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginTop: 3 }}>All service order payments and revenue</p>
@@ -1030,7 +1033,7 @@ const ProviderTransactions = () => {
       </div>
 
       {/* Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+      <div className="db-grid-3">
         <StatCard label="Total Revenue" value="€0.00" sub="All time" icon={<EuroSvg />} accent="var(--color-primary)" />
         <StatCard label="This Month" value="€0.00" sub="March 2026" icon={<CalSvg />} accent="var(--color-secondary)" />
         <StatCard label="Avg. Transaction" value="—" sub="No data yet" icon={<ChartSvg />} accent="#7C3AED" />
@@ -1038,24 +1041,26 @@ const ProviderTransactions = () => {
 
       {/* Table */}
       <Card>
-        <div style={{ padding: '16px 22px', borderBottom: '1px solid var(--color-border-light)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ padding: '16px 22px', borderBottom: '1px solid var(--color-border-light)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
           <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text-primary)' }}>Transaction History</p>
           <FilterTabs tabs={['All', 'Completed', 'Pending', 'Refunded']} active={tab} onSelect={setTab} />
         </div>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <TableHeader cols={['Date', 'Client', 'Service', 'Gross', 'Platform Fee', 'Net', 'Status']} />
-          <tbody>
-            <tr>
-              <td colSpan={7}>
-                <EmptyState
-                  icon={<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>}
-                  title="No transactions yet"
-                  description="Service order transactions will appear here once clients start booking your services."
-                />
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div className="db-table-wrap">
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 560 }}>
+            <TableHeader cols={['Date', 'Client', 'Service', 'Gross', 'Platform Fee', 'Net', 'Status']} />
+            <tbody>
+              <tr>
+                <td colSpan={7}>
+                  <EmptyState
+                    icon={<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>}
+                    title="No transactions yet"
+                    description="Service order transactions will appear here once clients start booking your services."
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </Card>
     </div>
   );
@@ -1104,6 +1109,7 @@ const ProviderSubscription = () => {
       {/* Current plan banner */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        flexWrap: 'wrap', gap: 14,
         padding: '18px 24px', borderRadius: 14,
         background: 'linear-gradient(135deg, #024139 0%, #0A544A 60%, #49A96C 100%)',
         color: '#fff',
@@ -1124,7 +1130,7 @@ const ProviderSubscription = () => {
       </div>
 
       {/* Plans */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+      <div className="db-grid-plans">
         {plans.map((plan) => (
           <div key={plan.name} style={{
             background: '#fff', borderRadius: 14, overflow: 'hidden',
@@ -1194,7 +1200,7 @@ const CustomerInvoices = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+      <div className="db-page-hd">
         <div>
           <h2 style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-text-primary)', letterSpacing: '-0.03em' }}>Invoices</h2>
           <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginTop: 3 }}>View and download your service invoices</p>
@@ -1211,7 +1217,7 @@ const CustomerInvoices = () => {
       </div>
 
       {/* Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+      <div className="db-grid-3">
         <StatCard label="Total Spent" value="€0.00" sub="All time" icon={<EuroSvg />} accent="var(--color-primary)" />
         <StatCard label="Paid Invoices" value="0" sub="Successfully paid" icon={<BookSvg />} accent="var(--color-secondary)" />
         <StatCard label="Pending" value="0" sub="Awaiting payment" icon={
@@ -1221,29 +1227,31 @@ const CustomerInvoices = () => {
 
       {/* Invoices table */}
       <Card>
-        <div style={{ padding: '16px 22px', borderBottom: '1px solid var(--color-border-light)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ padding: '16px 22px', borderBottom: '1px solid var(--color-border-light)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
           <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text-primary)' }}>Invoice History</p>
           <FilterTabs tabs={['All', 'Paid', 'Pending']} active={tab} onSelect={setTab} />
         </div>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <TableHeader cols={['Invoice #', 'Provider', 'Service', 'Date', 'Amount', 'Status', '']} />
-          <tbody>
-            <tr>
-              <td colSpan={7}>
-                <EmptyState
-                  icon={<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>}
-                  title="No invoices yet"
-                  description="After you book and pay for services, your invoices will appear here for download."
-                  action={
-                    <Link to="/dashboard/discover" className="btn btn-primary" style={{ fontSize: 13 }}>
-                      Discover services
-                    </Link>
-                  }
-                />
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div className="db-table-wrap">
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 560 }}>
+            <TableHeader cols={['Invoice #', 'Provider', 'Service', 'Date', 'Amount', 'Status', '']} />
+            <tbody>
+              <tr>
+                <td colSpan={7}>
+                  <EmptyState
+                    icon={<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>}
+                    title="No invoices yet"
+                    description="After you book and pay for services, your invoices will appear here for download."
+                    action={
+                      <Link to="/dashboard/discover" className="btn btn-primary" style={{ fontSize: 13 }}>
+                        Discover services
+                      </Link>
+                    }
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </Card>
     </div>
   );
@@ -1263,7 +1271,7 @@ const CustomerTransactions = () => {
       </div>
 
       {/* Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+      <div className="db-grid-3">
         <StatCard label="Total Spent" value="€0.00" sub="All time" icon={<EuroSvg />} accent="var(--color-primary)" />
         <StatCard label="This Month" value="€0.00" sub="March 2026" icon={<CalSvg />} accent="var(--color-secondary)" />
         <StatCard label="Bookings Paid" value="0" sub="Total services paid" icon={<BookSvg />} accent="#7C3AED" />
@@ -1271,29 +1279,31 @@ const CustomerTransactions = () => {
 
       {/* Transactions table */}
       <Card>
-        <div style={{ padding: '16px 22px', borderBottom: '1px solid var(--color-border-light)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ padding: '16px 22px', borderBottom: '1px solid var(--color-border-light)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
           <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text-primary)' }}>Payment History</p>
           <FilterTabs tabs={['All', 'Completed', 'Pending', 'Refunded']} active={tab} onSelect={setTab} />
         </div>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <TableHeader cols={['Date', 'Description', 'Provider', 'Payment Method', 'Amount', 'Status']} />
-          <tbody>
-            <tr>
-              <td colSpan={6}>
-                <EmptyState
-                  icon={<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>}
-                  title="No transactions yet"
-                  description="Payment transactions for your service bookings will appear here."
-                  action={
-                    <Link to="/dashboard/discover" className="btn btn-primary" style={{ fontSize: 13 }}>
-                      Book a service
-                    </Link>
-                  }
-                />
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div className="db-table-wrap">
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 500 }}>
+            <TableHeader cols={['Date', 'Description', 'Provider', 'Payment Method', 'Amount', 'Status']} />
+            <tbody>
+              <tr>
+                <td colSpan={6}>
+                  <EmptyState
+                    icon={<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>}
+                    title="No transactions yet"
+                    description="Payment transactions for your service bookings will appear here."
+                    action={
+                      <Link to="/dashboard/discover" className="btn btn-primary" style={{ fontSize: 13 }}>
+                        Book a service
+                      </Link>
+                    }
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </Card>
     </div>
   );
