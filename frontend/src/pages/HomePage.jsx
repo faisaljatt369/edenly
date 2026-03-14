@@ -129,6 +129,64 @@ const ArrowRight = () => (
   </svg>
 );
 
+/* Filled star for ratings */
+const StarFilled = ({ size = 14, color = '#F2C94C' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill={color} stroke={color} strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round">
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+  </svg>
+);
+
+/* Scissors icon for hero card */
+const ScissorsIcon = ({ size = 20 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/>
+    <line x1="20" y1="4" x2="8.12" y2="15.88"/>
+    <line x1="14.47" y1="14.48" x2="20" y2="20"/>
+    <line x1="8.12" y1="8.12" x2="12" y2="12"/>
+  </svg>
+);
+
+/* Benefit icons for Provider CTA */
+const CalendarIcon = ({ size = 22 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+    <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+    <line x1="3" y1="10" x2="21" y2="10"/>
+    <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/>
+  </svg>
+);
+const MegaphoneIcon = ({ size = 22 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 11l19-9v18L3 13"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>
+  </svg>
+);
+const CreditCardIcon = ({ size = 22 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+    <line x1="1" y1="10" x2="23" y2="10"/>
+  </svg>
+);
+const StarOutlineIcon = ({ size = 22 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+  </svg>
+);
+
+/* App store brand icons */
+const AppleIcon = ({ size = 22 }) => (
+  <svg width={size} height={size} viewBox="0 0 814 1000" fill="currentColor">
+    <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105.3-57.8-155.5-127.4C46 389.1 31 301.4 31 213.7c0-141.9 92.6-217.1 182.6-217.1 66.4 0 121.6 43.8 162.7 43.8 39.5 0 101-46.3 174.6-46.3 27.5 0 127.3 2.6 204.4 96.3zm-155-135.3c-7.7 36.1-28.4 66.4-54.1 85.9-24.4 18.9-56.3 33.5-87.6 33.5-3.9 0-7.7-.3-11.6-.9 1.3-35.4 19.5-67.1 42.5-89.2 25.4-24.4 60.8-41.9 94.4-46.3.1 5.7 .2 11.4 .2 17.1h16.2z"/>
+  </svg>
+);
+const GooglePlayIcon = ({ size = 22 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M3.18 23.76a2 2 0 0 1-1.1-.54L13 12 2.08.78a2 2 0 0 1 1.1-.54l.21.06 12.35 7.12v.01l-1.43 1.43L3.39 23.7l-.21.06z"/>
+    <path d="M19.4 14.9l-2.7 1.56-2.96-2.96 2.97-2.97 2.7 1.56a2 2 0 0 1 0 3.81z"/>
+    <path d="M3.39.3L14.31 8.85 12.88 10.28.3.54A2 2 0 0 1 3.39.3z"/>
+    <path d="M.08 23.22L12.88 13.72l1.43 1.43L3.39 23.7a2 2 0 0 1-3.31-.48z"/>
+  </svg>
+);
+
 /* ─────────────────────────────────────────────────────────────────
    HERO SECTION
 ───────────────────────────────────────────────────────────────── */
@@ -341,7 +399,7 @@ const Hero = () => {
 
           {/* Main portrait */}
           <img
-            src="https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=900&h=1100&fit=crop&q=85&auto=format"
+            src="https://images.unsplash.com/photo-1560869713-7d0a29430803?w=900&h=1100&fit=crop&q=85&auto=format"
             alt="Beauty professional"
             style={{
               position: 'absolute', inset: 0,
@@ -372,8 +430,8 @@ const Hero = () => {
               width: 40, height: 40, borderRadius: '50%',
               background: 'var(--gradient-brand)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: '#fff', fontSize: 18, flexShrink: 0,
-            }}>✂</div>
+              color: '#fff', flexShrink: 0,
+            }}><ScissorsIcon size={19} /></div>
             <div>
               <p style={{ fontWeight: 700, fontSize: 14, color: 'var(--color-text-primary)', lineHeight: 1.2 }}>
                 2,400+ Profis
@@ -392,10 +450,8 @@ const Hero = () => {
             boxShadow: 'var(--shadow-xl)',
             padding: '12px 18px',
           }}>
-            <div style={{ display: 'flex', gap: 3, marginBottom: 4 }}>
-              {[...Array(5)].map((_, i) => (
-                <span key={i} style={{ color: '#F2C94C', fontSize: 15 }}>★</span>
-              ))}
+            <div style={{ display: 'flex', gap: 2, marginBottom: 6 }}>
+              {[...Array(5)].map((_, i) => <StarFilled key={i} size={15} />)}
             </div>
             <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-primary)' }}>
               4.9 / 5 Bewertungen
@@ -790,7 +846,7 @@ const ProviderCard = ({ p }) => {
             {p.location}
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <span style={{ color: '#F2C94C', fontSize: 13 }}>★</span>
+            <StarFilled size={13} />
             <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)' }}>{p.rating}</span>
             <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>({p.reviews})</span>
           </span>
@@ -928,7 +984,7 @@ const ProviderCTA = () => (
             onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-secondary)'; e.currentTarget.style.color = '#fff'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = 'var(--color-primary)'; }}
           >
-            Kostenlos starten →
+            <span style={{ display:'flex', alignItems:'center', gap:8 }}>Kostenlos starten <ArrowRight /></span>
           </Link>
           <Link to="/contact" style={{
             color: 'rgba(255,255,255,0.8)', border: '1.5px solid rgba(255,255,255,0.3)',
@@ -947,10 +1003,10 @@ const ProviderCTA = () => (
       {/* Right: benefits list */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
         {[
-          { icon: '📅', title: 'Smart Booking System', desc: 'Online booking 24/7 — clients book while you sleep.' },
-          { icon: '📣', title: 'Reach New Clients', desc: 'Get discovered by thousands of customers searching for your services.' },
-          { icon: '💳', title: 'Integrated Payments', desc: 'Get paid instantly and securely, every time.' },
-          { icon: '⭐', title: 'Build Your Reputation', desc: 'Collect reviews and showcase your work to grow trust.' },
+          { icon: <CalendarIcon />,    title: 'Smart Booking System', desc: 'Online booking 24/7 — clients book while you sleep.' },
+          { icon: <MegaphoneIcon />,   title: 'Reach New Clients',    desc: 'Get discovered by thousands of customers searching for your services.' },
+          { icon: <CreditCardIcon />,  title: 'Integrated Payments',  desc: 'Get paid instantly and securely, every time.' },
+          { icon: <StarOutlineIcon />, title: 'Build Your Reputation', desc: 'Collect reviews and showcase your work to grow trust.' },
         ].map((b) => (
           <div key={b.title} style={{
             display: 'flex', gap: 16, alignItems: 'flex-start',
@@ -959,7 +1015,12 @@ const ProviderCTA = () => (
             borderRadius: 'var(--radius-lg)',
             padding: '16px 20px',
           }}>
-            <span style={{ fontSize: 22, flexShrink: 0, lineHeight: 1 }}>{b.icon}</span>
+            <div style={{
+              width: 40, height: 40, borderRadius: 'var(--radius-md)',
+              background: 'rgba(73,169,108,0.18)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: 'var(--color-secondary)', flexShrink: 0,
+            }}>{b.icon}</div>
             <div>
               <p style={{ fontWeight: 700, color: '#fff', fontSize: 14.5, marginBottom: 3 }}>{b.title}</p>
               <p style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.6)', lineHeight: 1.55 }}>{b.desc}</p>
@@ -1037,20 +1098,30 @@ const AppTeaser = () => (
 
       {/* Store badges placeholder */}
       <div style={{ display: 'flex', gap: 12, marginTop: 28, flexWrap: 'wrap', justifyContent: 'center' }}>
-        {['App Store', 'Google Play'].map((store) => (
-          <div key={store} style={{
-            background: 'var(--color-text-primary)', color: '#fff',
-            borderRadius: 'var(--radius-md)', padding: '10px 22px',
-            display: 'flex', alignItems: 'center', gap: 10, cursor: 'not-allowed',
-            opacity: 0.55,
-          }}>
-            <span style={{ fontSize: 20 }}>{store === 'App Store' ? '🍎' : '🤖'}</span>
-            <div style={{ textAlign: 'left' }}>
-              <p style={{ fontSize: 10, opacity: 0.7, margin: 0 }}>Bald auf dem</p>
-              <p style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>{store}</p>
-            </div>
+        <div style={{
+          background: 'var(--color-text-primary)', color: '#fff',
+          borderRadius: 'var(--radius-md)', padding: '10px 22px',
+          display: 'flex', alignItems: 'center', gap: 12, cursor: 'not-allowed',
+          opacity: 0.6, minWidth: 160,
+        }}>
+          <AppleIcon size={24} />
+          <div style={{ textAlign: 'left' }}>
+            <p style={{ fontSize: 10, opacity: 0.65, margin: 0, letterSpacing: '0.02em' }}>Bald auf dem</p>
+            <p style={{ fontSize: 15, fontWeight: 700, margin: 0 }}>App Store</p>
           </div>
-        ))}
+        </div>
+        <div style={{
+          background: 'var(--color-text-primary)', color: '#fff',
+          borderRadius: 'var(--radius-md)', padding: '10px 22px',
+          display: 'flex', alignItems: 'center', gap: 12, cursor: 'not-allowed',
+          opacity: 0.6, minWidth: 160,
+        }}>
+          <GooglePlayIcon size={22} />
+          <div style={{ textAlign: 'left' }}>
+            <p style={{ fontSize: 10, opacity: 0.65, margin: 0, letterSpacing: '0.02em' }}>Bald auf dem</p>
+            <p style={{ fontSize: 15, fontWeight: 700, margin: 0 }}>Google Play</p>
+          </div>
+        </div>
       </div>
     </div>
     <style>{`
