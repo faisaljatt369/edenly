@@ -398,71 +398,53 @@ const ServiceCard = ({ svc, index, allCats, onChange, onRemove, errors = {} }) =
   );
 };
 
-const StepServices = ({ data, onSave, onBack, allCats = [] }) => {
-  const [services, setServices] = useState(
-    (data.services || []).length
-      ? data.services.map((s) => ({ ...s, _key: s.id || `${Date.now()}-${Math.random()}` }))
-      : [emptyService()]
-  );
-  const [fieldErrors, setFieldErrors] = useState({});
-  const [saving, setSaving]           = useState(false);
-  const [apiError, setApiError]       = useState('');
-
-  const addService    = (custom = false) => setServices((p) => [...p, { ...emptyService(), is_custom: custom }]);
-  const removeService = (i)              => setServices((p) => p.filter((_, j) => j !== i));
-  const updateService = (i) => (updated) => {
-    setServices((p) => p.map((s, j) => j === i ? updated : s));
-    if (fieldErrors[i]?.name && updated.name.trim()) {
-      setFieldErrors((p) => { const n = { ...p }; delete n[i]; return n; });
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const errs = {};
-    services.forEach((s, i) => { if (!s.name.trim()) errs[i] = { name: 'Service name is required' }; });
-    if (Object.keys(errs).length) { setFieldErrors(errs); return; }
-    const named = services.filter((s) => s.name.trim());
-    if (!named.length) { setApiError('Add at least one service'); return; }
-    setSaving(true);
-    try {
-      await api.put('/providers/onboarding/services', { services: named });
-      onSave({ services: named });
-    } catch (err) {
-      setApiError(err.response?.data?.message || 'Failed to save. Please try again.');
-    } finally { setSaving(false); }
-  };
+const StepServices = ({ onSave, onBack }) => {
+  const navigate = useNavigate();
 
   return (
-    <form onSubmit={handleSubmit} noValidate>
-      {apiError && <Alert type="error" message={apiError} style={{ marginBottom: 16 }} />}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 20 }}>
-        {services.map((svc, i) => (
-          <ServiceCard
-            key={svc._key} svc={svc} index={i} allCats={allCats}
-            errors={fieldErrors[i] || {}}
-            onChange={updateService(i)}
-            onRemove={() => removeService(i)}
-          />
-        ))}
-      </div>
+    <form onSubmit={(e) => { e.preventDefault(); onSave({}); }} noValidate>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        {/* Info card */}
+        <div style={{
+          background: 'rgba(2,65,57,0.04)', border: '1.5px solid rgba(2,65,57,0.12)',
+          borderRadius: 14, padding: '20px 22px', display: 'flex', gap: 16, alignItems: 'flex-start',
+        }}>
+          <div style={{
+            width: 44, height: 44, borderRadius: 11, flexShrink: 0,
+            background: 'rgba(2,65,57,0.1)', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', fontSize: 22,
+          }}>✂️</div>
+          <div>
+            <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 5 }}>
+              Manage services from the Services page
+            </p>
+            <p style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.55 }}>
+              Add, edit, upload photos and set pricing for all your services from the dedicated Services page — with full image support and more options. Head there now or continue and come back later.
+            </p>
+          </div>
+        </div>
 
-      {/* Add service buttons */}
-      <div style={{ display: 'flex', gap: 10 }}>
-        <button type="button" onClick={() => addService(false)} style={{
-          flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
-          fontSize: 13, fontWeight: 600, color: 'var(--color-primary)',
-          background: 'transparent',
-          border: '1.5px dashed var(--color-border)',
-          borderRadius: 'var(--radius-lg)', padding: '12px 16px',
-          cursor: 'pointer', transition: 'all var(--transition-fast)',
-        }}
-        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(2,65,57,0.05)'; e.currentTarget.style.borderColor = 'var(--color-primary)'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'var(--color-border)'; }}>
-          <PlusIcon /> Add another service
+        {/* Go to services button */}
+        <button
+          type="button"
+          onClick={() => navigate('/dashboard/services')}
+          style={{
+            width: '100%', padding: '14px 20px', borderRadius: 12,
+            background: 'var(--color-primary)', color: '#fff', border: 'none',
+            fontSize: 14, fontWeight: 700, cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9,
+            transition: 'background 0.15s',
+            letterSpacing: '-0.01em',
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-primary-hover, #0A544A)'}
+          onMouseLeave={(e) => e.currentTarget.style.background = 'var(--color-primary)'}
+        >
+          <span style={{ fontSize: 16 }}>✂️</span>
+          Open Services page
         </button>
       </div>
-      <StepNav onBack={onBack} loading={saving} />
+
+      <StepNav onBack={onBack} nextLabel="Continue →" loading={false} />
     </form>
   );
 };

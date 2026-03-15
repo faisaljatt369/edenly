@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -45,6 +45,7 @@ const Icons = {
   menu:     () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="15" y2="18"/></svg>,
   close:    () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
   chevronD: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><polyline points="6 9 12 15 18 9"/></svg>,
+  user:     () => <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
 };
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -91,8 +92,7 @@ export const CUSTOMER_NAV = [
   {
     section: 'Finance',
     items: [
-      { id: 'invoices',     label: 'Invoices',     path: '/dashboard/invoices',     icon: 'invoices'     },
-      { id: 'transactions', label: 'Transactions', path: '/dashboard/transactions', icon: 'transactions' },
+      { id: 'invoices', label: 'Invoices', path: '/dashboard/invoices', icon: 'invoices' },
     ],
   },
 ];
@@ -162,7 +162,28 @@ export default function DashboardLayout({ navItems = [], pageTitle, pageTitleMap
   const navigate  = useNavigate();
   const { user, logout } = useAuth();
   const resolvedTitle = pageTitle || pageTitleMap[location.pathname] || 'Dashboard';
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileOpen, setMobileOpen]     = useState(false);
+  const [isMobile, setIsMobile]         = useState(() => window.innerWidth <= 768);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const chipRef = useRef(null);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  /* Click-outside closes the user dropdown */
+  useEffect(() => {
+    if (!dropdownOpen) return;
+    const handleMouseDown = (e) => {
+      if (chipRef.current && !chipRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleMouseDown);
+    return () => document.removeEventListener('mousedown', handleMouseDown);
+  }, [dropdownOpen]);
 
   const handleLogout = async () => {
     await logout();
@@ -241,9 +262,11 @@ export default function DashboardLayout({ navItems = [], pageTitle, pageTitleMap
             background: 'linear-gradient(135deg, #024139, #49A96C)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 12, fontWeight: 800, color: '#fff',
-            letterSpacing: '0.02em',
+            letterSpacing: '0.02em', overflow: 'hidden',
           }}>
-            {initials}
+            {user?.avatar_url
+              ? <img src={user.avatar_url} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              : initials}
           </div>
 
           {/* Name + role */}
@@ -291,6 +314,7 @@ export default function DashboardLayout({ navItems = [], pageTitle, pageTitleMap
           position: 'sticky', top: 0, height: '100vh',
           overflowY: 'auto', overflowX: 'hidden',
           boxShadow: '4px 0 24px rgba(2,65,57,0.35)',
+          display: isMobile ? 'none' : 'block',
         }}
       >
         {sidebarContent}
@@ -329,36 +353,30 @@ export default function DashboardLayout({ navItems = [], pageTitle, pageTitleMap
       {/* ── Main area ── */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
 
-        {/* ── Floating mobile menu button (shown only on mobile, outside topbar) ── */}
-        <button
-          className="db-fab-menu"
-          onClick={() => setMobileOpen(true)}
-          style={{
-            display: 'none',
-            position: 'fixed', top: 14, left: 14, zIndex: 120,
-            width: 40, height: 40, borderRadius: 11,
-            background: S.bg,
-            border: 'none', cursor: 'pointer',
-            alignItems: 'center', justifyContent: 'center',
-            color: '#fff',
-            boxShadow: '0 2px 12px rgba(2,65,57,0.35)',
-          }}
-        >
-          <Icons.menu />
-        </button>
-
         {/* ── Top bar ── */}
         <div className="db-topbar" style={{
           height: 60, background: '#fff',
           borderBottom: '1px solid #E8EEF2',
           display: 'flex', alignItems: 'center',
-          padding: '0 28px 0 24px', gap: 16,
+          padding: '0 16px 0 12px', gap: 12,
           position: 'sticky', top: 0, zIndex: 50,
           boxShadow: '0 1px 4px rgba(15,23,42,0.05)',
           flexShrink: 0,
         }}>
-          {/* placeholder — real mobile trigger is the FAB above */}
-          <span style={{ display: 'none' }} />
+          {/* Mobile menu button — only shown when sidebar is hidden */}
+          {isMobile && (
+            <button
+              onClick={() => setMobileOpen(true)}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                width: 36, height: 36, borderRadius: 9, flexShrink: 0,
+                background: S.bg, border: 'none', cursor: 'pointer',
+                color: '#fff',
+              }}
+            >
+              <Icons.menu />
+            </button>
+          )}
 
           {/* Logo */}
           <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', flexShrink: 0, textDecoration: 'none' }}>
@@ -390,31 +408,93 @@ export default function DashboardLayout({ navItems = [], pageTitle, pageTitleMap
           {/* Divider */}
           <div style={{ width: 1, height: 22, background: '#E2E8F0' }} />
 
-          {/* User chip */}
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 9, cursor: 'pointer',
-            padding: '5px 10px 5px 6px', borderRadius: 10, border: '1px solid #E2E8F0',
-            transition: 'all 0.14s', background: '#fff',
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = '#F8FAFC'; e.currentTarget.style.borderColor = '#CBD5E1'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = '#E2E8F0'; }}>
-            <div style={{
-              width: 28, height: 28, borderRadius: 8, flexShrink: 0,
-              background: 'linear-gradient(135deg, #024139, #49A96C)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 11, fontWeight: 800, color: '#fff',
-            }}>
-              {initials}
+          {/* User chip + dropdown */}
+          <div ref={chipRef} style={{ position: 'relative' }}>
+            <div
+              onMouseDown={() => setDropdownOpen((o) => !o)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 9, cursor: 'pointer',
+                padding: '5px 10px 5px 6px', borderRadius: 10,
+                border: `1px solid ${dropdownOpen ? '#CBD5E1' : '#E2E8F0'}`,
+                transition: 'all 0.14s',
+                background: dropdownOpen ? '#F8FAFC' : '#fff',
+                userSelect: 'none',
+              }}>
+              <div style={{
+                width: 28, height: 28, borderRadius: 8, flexShrink: 0,
+                background: 'linear-gradient(135deg, #024139, #49A96C)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 11, fontWeight: 800, color: '#fff', overflow: 'hidden',
+              }}>
+                {user?.avatar_url
+                  ? <img src={user.avatar_url} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  : initials}
+              </div>
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>
+                {user?.first_name}
+              </span>
+              <span style={{ transition: 'transform 0.2s', display: 'inline-flex', transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                <Icons.chevronD />
+              </span>
             </div>
-            <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>
-              {user?.first_name}
-            </span>
-            <Icons.chevronD />
+
+            {/* Dropdown menu */}
+            {dropdownOpen && (
+              <div style={{
+                position: 'absolute', top: 'calc(100% + 8px)', right: 0,
+                background: '#fff', borderRadius: 12, minWidth: 220,
+                boxShadow: '0 8px 32px rgba(2,65,57,0.13), 0 2px 8px rgba(0,0,0,0.08)',
+                border: '1px solid #E8EEF0', zIndex: 999, overflow: 'hidden',
+              }}>
+                {/* User info header */}
+                <div style={{ padding: '12px 16px 10px', borderBottom: '1px solid #F1F5F9' }}>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', marginBottom: 2 }}>
+                    {user?.first_name} {user?.last_name}
+                  </p>
+                  <p style={{ fontSize: 11.5, color: '#94A3B8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {user?.email}
+                  </p>
+                </div>
+
+                {/* Menu items */}
+                {[
+                  { Icon: Icons.settings, label: 'Settings',     action: () => { navigate('/dashboard/settings'); setDropdownOpen(false); } },
+                  { Icon: Icons.user,     label: 'View Profile',  action: () => { navigate('/dashboard/settings'); setDropdownOpen(false); } },
+                ].map((item) => (
+                  <button key={item.label} onMouseDown={item.action} style={{
+                    width: '100%', display: 'flex', alignItems: 'center', gap: 10,
+                    padding: '10px 16px', background: 'none', border: 'none', cursor: 'pointer',
+                    fontSize: 13, fontWeight: 500, color: '#334155', textAlign: 'left',
+                    transition: 'background 0.12s',
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#F8FAFC'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'none'}>
+                    <span style={{ display: 'flex', color: '#64748B' }}><item.Icon /></span>
+                    {item.label}
+                  </button>
+                ))}
+
+                {/* Divider + logout */}
+                <div style={{ borderTop: '1px solid #F1F5F9' }}>
+                  <button onMouseDown={handleLogout} style={{
+                    width: '100%', display: 'flex', alignItems: 'center', gap: 10,
+                    padding: '10px 16px', background: 'none', border: 'none', cursor: 'pointer',
+                    fontSize: 13, fontWeight: 500, color: '#EF4444', textAlign: 'left',
+                    transition: 'background 0.12s',
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#FEF2F2'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'none'}>
+                    <span style={{ color: '#EF4444', display: 'flex' }}><Icons.logout /></span>
+                    Sign out
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
         {/* ── Page content ── */}
-        <main className="db-main" style={{ flex: 1, padding: '28px 32px', overflowY: 'auto' }}>
+        <main className="db-main" style={{ flex: 1, padding: isMobile ? '20px 16px 24px' : '28px 32px', overflowY: 'auto' }}>
           {children}
         </main>
       </div>
@@ -424,9 +504,7 @@ export default function DashboardLayout({ navItems = [], pageTitle, pageTitleMap
         /* ── Sidebar / topbar ── */
         @media (max-width: 768px) {
           .db-sidebar   { display: none !important; }
-          .db-topbar    { display: none !important; }
-          .db-fab-menu  { display: flex !important; }
-          .db-main      { padding: 60px 16px 24px !important; }
+          .db-main      { padding: 20px 16px 24px !important; }
         }
         nav::-webkit-scrollbar { display: none; }
 

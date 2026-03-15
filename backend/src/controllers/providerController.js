@@ -118,20 +118,24 @@ const saveServices = async (req, res, next) => {
       const isApproved = !isCustom;
       let serviceId    = svc.id;
 
+      const imagesArr       = Array.isArray(svc.images) ? svc.images : [];
+      const titleImageIndex = typeof svc.title_image_index === 'number' ? svc.title_image_index : 0;
+
       if (serviceId) {
         await db.query(
           `UPDATE provider_services SET category_id=$1, name=$2, price=$3, duration=$4,
-           description=$5, updated_at=NOW() WHERE id=$6 AND provider_id=$7`,
+           description=$5, images=$6::jsonb, title_image_index=$7, updated_at=NOW()
+           WHERE id=$8 AND provider_id=$9`,
           [svc.category_id || null, svc.name, svc.price || null, svc.duration || null,
-           svc.description || null, serviceId, pp.id]
+           svc.description || null, JSON.stringify(imagesArr), titleImageIndex, serviceId, pp.id]
         );
       } else {
         const { rows } = await db.query(
           `INSERT INTO provider_services
-           (provider_id, category_id, name, price, duration, description, is_custom, is_approved)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id`,
+           (provider_id, category_id, name, price, duration, description, images, title_image_index, is_custom, is_approved)
+           VALUES ($1,$2,$3,$4,$5,$6,$7::jsonb,$8,$9,$10) RETURNING id`,
           [pp.id, svc.category_id || null, svc.name, svc.price || null,
-           svc.duration || null, svc.description || null, isCustom, isApproved]
+           svc.duration || null, svc.description || null, JSON.stringify(imagesArr), titleImageIndex, isCustom, isApproved]
         );
         serviceId = rows[0].id;
       }
